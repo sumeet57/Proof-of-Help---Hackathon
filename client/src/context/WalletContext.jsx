@@ -9,9 +9,14 @@ import {
   getBalance,
 } from "../services/web3.service.js";
 import { userApi } from "../interceptors/user.api.js";
+import {
+  EXPECTED_CHAIN_ID,
+  NETWORK_NAME,
+  CURRENCY_SYMBOL,
+} from "../utils/web3.utils.js";
 
 const MANUAL_DISCONNECT_KEY = "wallet:manuallyDisconnected";
-const MANUAL_DISCONNECT_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
+const MANUAL_DISCONNECT_TTL_MS = 1000 * 60 * 60 * 24; // 24h
 
 function setManualDisconnectFlag() {
   const payload = { ts: Date.now() };
@@ -19,13 +24,11 @@ function setManualDisconnectFlag() {
     localStorage.setItem(MANUAL_DISCONNECT_KEY, JSON.stringify(payload));
   } catch (e) {}
 }
-
 function clearManualDisconnectFlag() {
   try {
     localStorage.removeItem(MANUAL_DISCONNECT_KEY);
   } catch (e) {}
 }
-
 function isManualDisconnectActive() {
   try {
     const raw = localStorage.getItem(MANUAL_DISCONNECT_KEY);
@@ -107,11 +110,12 @@ export const WalletContextProvider = ({ children }) => {
   async function handleAccountsChanged(newAccounts) {
     try {
       if (isManualDisconnectActive()) {
+        console.log("Ignoring accountsChanged due to manual disconnect flag");
         return;
       }
       const normalized = (newAccounts || []).map((a) => a.toLowerCase());
       if (!normalized.length) {
-        await disconnectWallet(); // user locked accounts in wallet UI
+        await disconnectWallet();
         return;
       }
       const acct = normalized[0];
@@ -268,6 +272,9 @@ export const WalletContextProvider = ({ children }) => {
       disconnectWallet,
       refreshBalance,
       switchNetwork,
+      EXPECTED_CHAIN_ID,
+      NETWORK_NAME,
+      CURRENCY_SYMBOL,
     }),
     [connected, address, ensName, chain, balance, provider, signer, loading]
   );

@@ -1,3 +1,4 @@
+import { createRequestSchema } from "../validations/request.validate.js";
 import { loginSchema, registerSchema } from "../validations/user.validate.js";
 
 export const validateRegister = (req, res, next) => {
@@ -10,6 +11,14 @@ export const validateRegister = (req, res, next) => {
 
 export const validateLogin = (req, res, next) => {
   const { error } = loginSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+  next();
+};
+
+export const validateRequestCreation = (req, res, next) => {
+  const { error } = createRequestSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }

@@ -77,8 +77,8 @@ export async function listMyRequestsController(req, res) {
  */
 export async function getRequestController(req, res) {
   try {
-    const { id } = req.params;
-    const request = await getRequestById(id);
+    const { requestId } = req.params;
+    const request = await getRequestById(requestId);
     if (!request) return res.status(404).json({ error: "Request not found" });
     return res.json({ request });
   } catch (err) {

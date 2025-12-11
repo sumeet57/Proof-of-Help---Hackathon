@@ -4,7 +4,6 @@ import React from "react";
 export default function RequestCard({
   request,
   onView = () => {},
-  onBoost = () => {},
   onDonate = () => {},
 }) {
   const {
@@ -29,7 +28,7 @@ export default function RequestCard({
 
   return (
     <article
-      className="bg-zinc-800/60 border border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow"
+      className="bg-zinc-800/60 border  border-zinc-700 rounded-2xl p-4  shadow-sm hover:shadow-md transition-shadow"
       role="article"
       aria-labelledby={`req-${_id}`}
     >
@@ -53,7 +52,7 @@ export default function RequestCard({
           </div>
 
           <p className="mt-3 text-sm text-stone-300 line-clamp-3">
-            {request.description}
+            {request?.description.substring(0, 100)}...
           </p>
 
           <div className="mt-4">
@@ -78,13 +77,6 @@ export default function RequestCard({
               </div>
 
               <div className="flex-shrink-0 flex gap-2 items-center">
-                <button
-                  onClick={() => onBoost(request)}
-                  className="px-3 py-1.5 text-xs rounded-md bg-zinc-700 border border-zinc-600 text-stone-100 hover:bg-zinc-700/80"
-                >
-                  Boost
-                </button>
-
                 <button
                   onClick={() => onDonate(request)}
                   className="px-3 py-1.5 text-xs rounded-md bg-orange-400 text-zinc-900 font-semibold hover:opacity-95"

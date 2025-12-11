@@ -4,6 +4,7 @@ import {
   listDonations,
   listDonationsForRequest,
 } from "../services/donation.service.js";
+import { getUserWalletId } from "../services/user.service.js";
 
 /**
  * POST /api/donations
@@ -38,6 +39,14 @@ export async function createDonationController(req, res) {
       txTimestamp,
       meta,
     } = req.body;
+
+    // const userWalletId = await getUserWalletId(req.userId);
+    // if (!userWalletId) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Donor user does not have a wallet ID set" });
+    // }
+    // const toWallet = userWalletId;
 
     const donation = await createDonationRecord({
       requestId,

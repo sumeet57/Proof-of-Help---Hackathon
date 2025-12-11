@@ -1,25 +1,73 @@
 // src/pages/Create.jsx
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RequestContext } from "../../context/RequestContext";
+import { RequestContext } from "../../context/RequestContext.jsx";
 import { WalletContext } from "../../context/WalletContext";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Loading.jsx";
+import { CURRENCY_SYMBOL } from "../../utils/web3.utils.js";
 
 const CATEGORY_OPTIONS = ["education", "medical", "disaster", "food", "other"];
+const COINGECKO_URL =
+  "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr";
 
 export default function Create() {
   const navigate = useNavigate();
-  const { addRequest } = useContext(RequestContext) || {};
-  const { connected, connectWallet, address } = useContext(WalletContext);
+  const { addRequest } = useContext(RequestContext);
+  const { connected, connectWallet } = useContext(WalletContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("other");
-  const [amount, setAmount] = useState(""); // in ETH (or token units)
-  const [currencySymbol, setCurrencySymbol] = useState("ETH");
+
+  const [fiatAmount, setFiatAmount] = useState("");
+  const [ethPrice, setEthPrice] = useState(null);
+  const [ethAmount, setEthAmount] = useState("0");
+  const [priceLoading, setPriceLoading] = useState(false);
+
+  const [currencySymbol] = useState(CURRENCY_SYMBOL || "ETH");
   const [network, setNetwork] = useState("sepolia");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    async function fetchPrice() {
+      try {
+        setPriceLoading(true);
+        const res = await fetch(COINGECKO_URL);
+        const json = await res.json();
+        const price = json?.ethereum?.inr;
+        if (active && price) setEthPrice(price);
+      } catch (e) {
+        console.warn("Failed to fetch ETH price", e);
+      } finally {
+        setPriceLoading(false);
+      }
+    }
+    fetchPrice();
+    const interval = setInterval(fetchPrice, 1000 * 60);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const n = Number(String(fiatAmount).replace(/,/g, "").trim());
+      if (!n || !ethPrice) {
+        setEthAmount("0");
+        return;
+      }
+      const eth = n / ethPrice;
+      setEthAmount(String(Number(eth.toFixed(6))));
+    }, 250);
+    return () => clearTimeout(debounceRef.current);
+  }, [fiatAmount, ethPrice]);
 
   async function ensureWalletConnected() {
     if (connected) return true;
@@ -36,35 +84,27 @@ export default function Create() {
     e.preventDefault();
     setError(null);
 
-    if (!title.trim()) {
-      setError("Title is required");
-      return;
-    }
-    if (!description.trim()) {
-      setError("Description is required");
-      return;
-    }
+    if (!title.trim()) return setError("Title is required");
+    if (!description.trim()) return setError("Description is required");
 
     const ok = await ensureWalletConnected();
     if (!ok) return;
+
+    const eth = Number(ethAmount);
+    if (!eth || eth < 0.01) {
+      return setError(`Target must be at least 0.01 ${currencySymbol}`);
+    }
 
     const payload = {
       title: title.trim(),
       description: description.trim(),
       category,
       target: {
-        amount: amount ? Number(amount) : 0,
+        amount: eth,
         currencySymbol,
         network,
       },
-      // optionally include owner wallet/address if your backend expects it
-      ownerWalletAddress: address || null,
     };
-
-    if (typeof addRequest !== "function") {
-      setError("Request API not available");
-      return;
-    }
 
     try {
       setLoading(true);
@@ -74,7 +114,7 @@ export default function Create() {
       const msg =
         err?.response?.data?.error ||
         err?.message ||
-        "Failed to create request. Try again.";
+        "Failed to create request";
       setError(msg);
     } finally {
       setLoading(false);
@@ -88,8 +128,7 @@ export default function Create() {
           <header className="mb-6">
             <h2 className="text-2xl font-semibold">Create Request</h2>
             <p className="text-sm text-stone-400 mt-1">
-              Fill details and publish your request. You must connect a wallet
-              to create (used as recipient wallet).
+              Enter your request details and the amount you need in INR.
             </p>
           </header>
 
@@ -140,13 +179,13 @@ export default function Create() {
 
               <div>
                 <label className="block text-sm font-medium text-stone-200 mb-2">
-                  Target Amount ({currencySymbol})
+                  Target Amount (INR)
                 </label>
                 <input
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  value={fiatAmount}
+                  onChange={(e) => setFiatAmount(e.target.value)}
                   className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-stone-100 focus:outline-none focus:ring-2 focus:ring-orange-400/40"
-                  placeholder="0 (optional)"
+                  placeholder="Enter amount in INR (e.g., 5000)"
                   inputMode="decimal"
                 />
               </div>
@@ -164,6 +203,42 @@ export default function Create() {
                   <option value="goerli">Goerli</option>
                   <option value="polygon-mumbai">Polygon Mumbai</option>
                 </select>
+              </div>
+            </div>
+
+            <div className="bg-zinc-900/20 border border-zinc-800 rounded-md p-3">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-xs text-stone-400">Converted target</div>
+                  <div className="mt-1 text-lg font-semibold text-stone-100">
+                    {priceLoading ? (
+                      <span>Loading price…</span>
+                    ) : (
+                      <>
+                        {ethAmount} {currencySymbol}
+                      </>
+                    )}
+                  </div>
+                  <div className="text-xs text-stone-400">
+                    {ethPrice
+                      ? `1 ${currencySymbol} ≈ ₹${Number(
+                          ethPrice
+                        ).toLocaleString()}`
+                      : "Live price unavailable"}
+                  </div>
+                </div>
+                <div className="text-sm text-stone-400">
+                  {fiatAmount ? (
+                    <>
+                      Fiat: ₹
+                      {Number(
+                        String(fiatAmount).replace(/,/g, "") || 0
+                      ).toLocaleString()}
+                    </>
+                  ) : (
+                    "No fiat amount"
+                  )}
+                </div>
               </div>
             </div>
 
@@ -192,9 +267,10 @@ export default function Create() {
                   onClick={() => {
                     setTitle("");
                     setDescription("");
-                    setAmount("");
+                    setFiatAmount("");
                     setCategory("other");
                     setError(null);
+                    setEthAmount("0");
                   }}
                   className="px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60 text-stone-200"
                 >
@@ -210,7 +286,7 @@ export default function Create() {
         </div>
       </div>
 
-      {loading && <Loading fullScreen={false} />}
+      {(loading || priceLoading) && <Loading fullScreen={false} />}
     </div>
   );
 }

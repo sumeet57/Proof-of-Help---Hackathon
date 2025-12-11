@@ -8,6 +8,7 @@ import limiter from "./middlewares/rateLimiter.js";
 import helmet from "helmet";
 import hpp from "hpp";
 import requestRouter from "./routes/request.route.js";
+import donationRouter from "./routes/donation.route.js";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", limiter);
 app.use("/api/user", userRouter);
 app.use("/api/request", requestRouter);
+app.use("/api/donation", donationRouter);
 
 app.use("/", (req, res) => {
   res.json({ message: "Server is running" });

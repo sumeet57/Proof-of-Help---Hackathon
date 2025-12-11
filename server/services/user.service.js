@@ -9,6 +9,11 @@ export async function findUserById(userId) {
   return User.findById(userId);
 }
 
+export async function getUserWalletId(userId) {
+  const user = await User.findById(userId).select("walletId");
+  return user ? user.walletId : null;
+}
+
 export async function updateWalletId(userId, walletId) {
   const normalized = walletId ? normalizeWalletAddress(walletId) : null;
 

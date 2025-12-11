@@ -10,6 +10,9 @@ import Landing from "./pages/Landing";
 import { RequestContextProvider } from "./context/RequestContext";
 import { WalletContextProvider } from "./context/WalletContext";
 import Create from "./pages/request/Create";
+import Details from "./pages/request/Details";
+import { DonationContextProvider } from "./context/DonationContext";
+import Donation from "./pages/Donation";
 const App = () => {
   return (
     <>
@@ -60,6 +63,30 @@ const App = () => {
                   </UserContextProvider>
                 </LayoutContextProvider>
               </WalletContextProvider>
+            }
+          />
+          <Route
+            path="/:requestId"
+            element={
+              <WalletContextProvider>
+                <LayoutContextProvider>
+                  <UserContextProvider>
+                    <RequestContextProvider>
+                      <Details />
+                    </RequestContextProvider>
+                  </UserContextProvider>
+                </LayoutContextProvider>
+              </WalletContextProvider>
+            }
+            children={
+              <Route
+                path="donate"
+                element={
+                  <DonationContextProvider>
+                    <Donation />
+                  </DonationContextProvider>
+                }
+              />
             }
           />
         </Routes>
