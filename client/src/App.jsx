@@ -1,9 +1,15 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Auth from "./pages/Auth";
-import Home from "./pages/Home";
 import { UserContextProvider } from "./context/UserContext";
 import { ToastContainer } from "react-toastify";
+import { LayoutContextProvider } from "./context/LayoutContext";
+import MainLayout from "./layouts/MainLayout";
+import Header from "./components/Header";
+import Landing from "./pages/Landing";
+import { RequestContextProvider } from "./context/RequestContext";
+import { WalletContextProvider } from "./context/WalletContext";
+import Create from "./pages/request/Create";
 const App = () => {
   return (
     <>
@@ -13,9 +19,11 @@ const App = () => {
           <Route
             path="/"
             element={
-              <UserContextProvider>
-                <Home />
-              </UserContextProvider>
+              <LayoutContextProvider>
+                <UserContextProvider>
+                  <Landing />
+                </UserContextProvider>
+              </LayoutContextProvider>
             }
           />
           <Route
@@ -24,6 +32,34 @@ const App = () => {
               <UserContextProvider>
                 <Auth />
               </UserContextProvider>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <WalletContextProvider>
+                <LayoutContextProvider>
+                  <UserContextProvider>
+                    <RequestContextProvider>
+                      <MainLayout />
+                    </RequestContextProvider>
+                  </UserContextProvider>
+                </LayoutContextProvider>
+              </WalletContextProvider>
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <WalletContextProvider>
+                <LayoutContextProvider>
+                  <UserContextProvider>
+                    <RequestContextProvider>
+                      <Create />
+                    </RequestContextProvider>
+                  </UserContextProvider>
+                </LayoutContextProvider>
+              </WalletContextProvider>
             }
           />
         </Routes>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext } from "react";
-import { userApi } from "../interceptors/User.api";
+import { userApi } from "../interceptors/user.api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {

@@ -7,6 +7,7 @@ import userRouter from "./routes/user.route.js";
 import limiter from "./middlewares/rateLimiter.js";
 import helmet from "helmet";
 import hpp from "hpp";
+import requestRouter from "./routes/request.route.js";
 
 const app = express();
 
@@ -20,13 +21,14 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "x-session-id"],
   })
 );
-console.log(process.env.CLIENT_URL);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/", limiter);
 app.use("/api/user", userRouter);
+app.use("/api/request", requestRouter);
 
 app.use("/", (req, res) => {
   res.json({ message: "Server is running" });

@@ -12,6 +12,7 @@ import {
 } from "../services/auth.service.js";
 import crypto from "crypto";
 import { hashSessionId } from "../utils/auth/session.utils.js";
+import { updateWalletId } from "../services/user.service.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -85,5 +86,31 @@ export const logoutUser = async (req, res) => {
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const setWalletController = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const { walletId } = req.body;
+
+    // walletId may be null to clear
+    console.log("setWalletController called with walletId:", walletId);
+    const updated = await updateWalletId(userId, walletId ?? null);
+
+    return res.json({
+      success: true,
+      user: updated,
+    });
+  } catch (err) {
+    console.error("setWalletController error:", err);
+    if (err.code === "INVALID_WALLET") {
+      return res.status(400).json({ error: err.message });
+    }
+    if (err.code === "USER_NOT_FOUND") {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: "Server error" });
   }
 };
