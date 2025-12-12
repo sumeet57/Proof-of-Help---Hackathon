@@ -38,7 +38,7 @@ userApi.interceptors.response.use(
         const path = window.location.pathname;
 
         // pages where we don't want to force-redirect
-        const allowedPaths = ["/", "/home", "/auth", "/logout"];
+        const allowedPaths = ["/auth", "/logout"];
 
         if (!allowedPaths.includes(path)) {
           try {
