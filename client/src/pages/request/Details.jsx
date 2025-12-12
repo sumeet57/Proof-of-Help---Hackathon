@@ -47,7 +47,7 @@ export default function Details() {
 
   if (loading && !selectedRequest) {
     return (
-      <div className="min-h-[300px] flex items-center justify-center bg-zinc-900 text-stone-100">
+      <div className="min-h-screen flex items-center justify-center bg-zinc-900 text-stone-100">
         <Loading fullScreen={false} />
       </div>
     );
