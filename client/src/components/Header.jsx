@@ -46,7 +46,6 @@ const Header = () => {
     { href: "#", label: "Instagram" },
     { href: "www.linkedin.com/in/sumeet-umbalkar", label: "LinkedIn" },
     { href: "https://www.sumeet.live/", label: "Portfolio" },
-    { href: "/admin", label: "Admin" },
   ];
 
   return (
