@@ -1,7 +1,7 @@
 // src/context/DonationContext.jsx
 import React, { createContext, useContext, useState } from "react";
 import { ethers } from "ethers";
-import { userApi } from "../interceptors/User.api.js";
+import { userApi } from "../interceptors/userApi.js";
 import { WalletContext } from "./WalletContext";
 import {
   EXPECTED_CHAIN_ID,

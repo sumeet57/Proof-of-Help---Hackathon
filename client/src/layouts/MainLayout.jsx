@@ -38,7 +38,7 @@ const MainLayout = ({ children }) => {
       <main className="flex-1 min-h-screen px-2 sm:px-5 lg:pl-80 lg:pr-12 pt-2 lg:pt-6 pb-32 lg:pb-12 transition-all">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold capitalize tracking-tight">
+            <h1 className="text-3xl font-semibold capitalize tracking-tight">
               {sideBarSelected}
             </h1>
             <p className="text-sm text-stone-400 mt-1">

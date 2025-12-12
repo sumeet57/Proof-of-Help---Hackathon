@@ -1,8 +1,9 @@
 import React, { useEffect, useState, createContext } from "react";
-import { userApi } from "../interceptors/User.api.js";
+import { userApi } from "../interceptors/userApi.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
+  getFromLocalStorage,
   removeFromLocalStorage,
   saveToLocalStorage,
 } from "../utils/storage.utils";
@@ -33,14 +34,15 @@ export const UserContextProvider = ({ children }) => {
       setLoading(true);
       const response = await userApi.post("/register", userData);
       if (response.status === 201) {
-        navigate(-1);
-        getUser();
+        // Save sessionId BEFORE fetching user so the next request includes it
         saveToLocalStorage("sessionId", response.data.sessionId);
+        await getUser();
+        navigate(-1);
         toast.success(response.data.message);
       }
       return response;
     } catch (error) {
-      toast.error(error);
+      toast.error(error.error || error);
       return Promise.reject(error);
     } finally {
       setLoading(false);
@@ -52,14 +54,14 @@ export const UserContextProvider = ({ children }) => {
       setLoading(true);
       const response = await userApi.post("/login", userData);
       if (response.status === 200) {
-        navigate(-1);
-        getUser();
         saveToLocalStorage("sessionId", response.data.sessionId);
+        await getUser();
+        navigate(-1);
         toast.success(response.data.message);
       }
       return response;
     } catch (error) {
-      toast.error(error);
+      toast.error(error.error || error);
       return Promise.reject(error);
     } finally {
       setLoading(false);
@@ -70,20 +72,24 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/logout");
+      removeFromLocalStorage("sessionId");
+      setUser(null);
       window.location.href = "/";
-      if (response.status === 200) {
-        setUser(null);
-        removeFromLocalStorage("sessionId");
-        toast.success(response.data.message);
-      }
       return response;
-    } catch (error) {
-      toast.error(error);
-      return Promise.reject(error);
+    } catch (err) {
+      if (err?.status === 401) {
+        removeFromLocalStorage("sessionId");
+        setUser(null);
+        window.location.href = "/auth";
+      } else {
+        toast.error(err?.error || err?.message || "Logout failed");
+      }
+      return Promise.reject(err);
     } finally {
       setLoading(false);
     }
   };
+
   const update = async (userData) => {
     try {
       setLoading(true);

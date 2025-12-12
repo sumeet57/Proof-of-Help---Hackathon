@@ -1,11 +1,7 @@
-// src/components/RequestCard.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { fetchEthToInrRate } from "../utils/ethToInr";
 
-export default function RequestCard({
-  request,
-  onView = () => {},
-  onDonate = () => {},
-}) {
+export default function RequestCard({ request, onDonate = () => {} }) {
   const {
     _id,
     title,
@@ -14,79 +10,85 @@ export default function RequestCard({
     target = {},
     createdAt,
     user,
+    description,
   } = request;
+
+  const [ethToInr, setEthToInr] = useState(200000);
+
+  useEffect(() => {
+    async function load() {
+      const rate = await fetchEthToInrRate();
+      setEthToInr(rate);
+    }
+    load();
+  }, []);
 
   const received = Number(totals.totalReceived || 0);
   const targetAmount = Number(target.amount || 0);
   const progress =
     targetAmount > 0 ? Math.min((received / targetAmount) * 100, 100) : 0;
 
-  // owner display fallback
   const ownerName = user?.fullName
     ? `${user.fullName.firstName} ${user.fullName.lastName}`
     : user?.email || "Unknown";
 
+  const receivedINR = (received * ethToInr).toLocaleString("en-IN");
+  const targetINR = (targetAmount * ethToInr).toLocaleString("en-IN");
+
   return (
-    <article
-      className="bg-zinc-800/60 border  border-zinc-700 rounded-2xl p-4  shadow-sm hover:shadow-md transition-shadow"
-      role="article"
-      aria-labelledby={`req-${_id}`}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-orange-400/20 text-orange-400 font-semibold">
-              {ownerName ? ownerName.charAt(0).toUpperCase() : "U"}
-            </div>
-            <div className="min-w-0">
-              <h3
-                id={`req-${_id}`}
-                className="text-lg font-semibold text-stone-100 truncate"
-              >
-                {title}
-              </h3>
-              <p className="text-sm text-stone-300 truncate">
-                {category} • {new Date(createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-3 text-sm text-stone-300 line-clamp-3">
-            {request?.description.substring(0, 100)}...
-          </p>
-
-          <div className="mt-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex-1 mr-4">
-                <div className="w-full bg-zinc-700 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="h-2 rounded-full bg-orange-400 transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <div className="mt-2 flex items-center justify-between text-xs text-stone-300">
-                  <span>
-                    {received} {target.currencySymbol || "ETH"} received
-                  </span>
-                  <span>
-                    {targetAmount > 0
-                      ? `${targetAmount} ${target.currencySymbol}`
-                      : "No target"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex-shrink-0 flex gap-2 items-center">
-                <button
-                  onClick={() => onDonate(request)}
-                  className="px-3 py-1.5 text-xs rounded-md bg-orange-400 text-zinc-900 font-semibold hover:opacity-95"
-                >
-                  Donate
-                </button>
-              </div>
-            </div>
-          </div>
+    <article className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-3 mb-3 shadow-sm hover:bg-zinc-800/70 transition">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 flex items-center justify-center rounded-md bg-orange-400/20 text-orange-400 text-lg font-semibold">
+          {ownerName.charAt(0).toUpperCase()}
         </div>
+
+        <div className="flex-1">
+          <h3 className="text-base font-semibold text-stone-100 leading-tight">
+            {title}
+          </h3>
+          <p className="text-xs text-stone-400">
+            {category} • {new Date(createdAt).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+
+      {/* Description */}
+      <p className="mt-2 text-sm text-stone-300 line-clamp-2">
+        {description?.substring(0, 90)}...
+      </p>
+
+      {/* PROGRESS BAR */}
+      <div className="mt-3 w-full bg-zinc-700 h-1.5 rounded-full overflow-hidden">
+        <div
+          className="h-1.5 bg-orange-400 rounded-full"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* NEW — COMPACT METRICS + DONATE BUTTON IN 1 ROW */}
+      <div className="mt-2 flex items-center justify-between">
+        {/* Left side: ETH + INR compact */}
+        <div className="flex flex-col text-xs leading-tight">
+          <span className="text-stone-200 font-medium">
+            {received} {target.currencySymbol || "ETH"}
+            {" | "}(₹{receivedINR})
+          </span>
+
+          <span className="text-stone-400">
+            Target: {targetAmount} {" | "}
+            {target.currencySymbol || "ETH"} (₹
+            {targetINR})
+          </span>
+        </div>
+
+        {/* Right side: Donate button (Large and crisp) */}
+        <button
+          onClick={() => onDonate(request)}
+          className="px-4 py-2 bg-orange-400 text-zinc-900 text-sm font-semibold rounded-md hover:opacity-90 whitespace-nowrap ml-3"
+        >
+          Donate
+        </button>
       </div>
     </article>
   );
