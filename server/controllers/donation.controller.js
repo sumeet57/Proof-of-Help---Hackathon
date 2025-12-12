@@ -205,6 +205,7 @@ export async function validateBeforeDonation(req, res) {
       err.code = "TARGET_AMOUNT_REACHED";
       throw err;
     }
+    return res.status(200).json({ message: "Validation successful" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

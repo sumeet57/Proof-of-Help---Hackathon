@@ -1,11 +1,13 @@
 // src/pages/Donation.jsx
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RequestContext } from "../context/RequestContext";
 import { DonationContext } from "../context/DonationContext";
 import { WalletContext } from "../context/WalletContext";
 import Loading from "../components/Loading";
 import { CURRENCY_SYMBOL } from "../utils/web3.utils.js";
+import { LayoutContext } from "../context/LayoutContext.jsx";
+import { toast } from "react-toastify";
 
 export default function Donation() {
   const { requestId } = useParams(); // use requestId (not id)
@@ -14,6 +16,7 @@ export default function Donation() {
     fetchRequest,
     loading: reqLoading,
   } = useContext(RequestContext);
+  const { setSideBarSelected } = useContext(LayoutContext);
   const {
     donate,
     loading: donating,
@@ -43,6 +46,7 @@ export default function Donation() {
     const suggested = Number(selectedRequest?.target?.amount || 0);
     setAmountEth(suggested > 0 ? String(suggested) : "");
   }, [selectedRequest]);
+  const navigate = useNavigate();
 
   // wait until selectedRequestRef is populated (or timeout)
   async function waitForSelectedRequest(timeoutMs = 3000) {
@@ -171,8 +175,10 @@ export default function Donation() {
       });
 
       setSuccessTx(res.txHash);
-      // refresh request details in UI
       await fetchRequest(requestId);
+      setSideBarSelected("donations");
+      toast.success("Donation successful");
+      navigate("/home");
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Donation failed";
