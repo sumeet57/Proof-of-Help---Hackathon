@@ -34,8 +34,6 @@ export const UserContextProvider = ({ children }) => {
       setLoading(true);
       const response = await userApi.post("/register", userData);
       if (response.status === 201) {
-        // Save sessionId BEFORE fetching user so the next request includes it
-        saveToLocalStorage("sessionId", response.data.sessionId);
         await getUser();
         navigate(-1);
         toast.success(response.data.message);
@@ -54,7 +52,6 @@ export const UserContextProvider = ({ children }) => {
       setLoading(true);
       const response = await userApi.post("/login", userData);
       if (response.status === 200) {
-        saveToLocalStorage("sessionId", response.data.sessionId);
         await getUser();
         navigate(-1);
         toast.success(response.data.message);
@@ -72,13 +69,12 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/logout");
-      removeFromLocalStorage("sessionId");
+
       setUser(null);
       window.location.href = "/";
       return response;
     } catch (err) {
       if (err?.status === 401) {
-        removeFromLocalStorage("sessionId");
         setUser(null);
         window.location.href = "/auth";
       } else {
