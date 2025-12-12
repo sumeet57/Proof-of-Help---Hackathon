@@ -85,8 +85,8 @@ export async function updateRequestStatus(requestId, userId, newStatus) {
     err.code = "NOT_FOUND";
     throw err;
   }
-
-  if (request.user.toString() !== userId.toString()) {
+  console.log("Comparing:", request.user.toString(), userId.toString());
+  if (request.user.toString() != userId.toString()) {
     const err = new Error("Not authorized to update this request");
     err.code = "FORBIDDEN";
     throw err;

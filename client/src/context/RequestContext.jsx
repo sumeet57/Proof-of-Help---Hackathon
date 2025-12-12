@@ -41,7 +41,7 @@ export const RequestContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await requestApi.get(`/user/${userId}`);
-      setRequests(response.data.items);
+      setRequests(response?.data?.items || []);
     } catch (error) {
       console.log("Error fetching requests by user:", error);
       setError(error);

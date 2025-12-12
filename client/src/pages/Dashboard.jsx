@@ -23,10 +23,10 @@ export default function Dashboard() {
     async function load() {
       setLoading(true);
       try {
-        const a = await fetchRequestByUser(user._id); // ONLY this as you asked
+        const a = await fetchRequestByUser(user?._id); // ONLY this as you asked
+        console.log("Fetched user requests:", a);
       } catch (err) {
         console.error(err);
-        toast.error("Failed to load your requests");
       } finally {
         setLoading(false);
       }
