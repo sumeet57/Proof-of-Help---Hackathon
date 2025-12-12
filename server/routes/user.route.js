@@ -15,16 +15,16 @@ import { validateLogin, validateRegister } from "../middlewares/validate.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/", sessionAuthentication, authenticate, getUserProfile);
+userRouter.get("/", authenticate, getUserProfile);
 userRouter.post("/login", validateLogin, loginUser);
 userRouter.post("/register", validateRegister, registerUser);
 userRouter.post("/logout", authenticate, logoutUser);
 userRouter.post(
   "/wallet",
-  sessionAuthentication,
+
   authenticate,
   setWalletController
 );
-userRouter.put("/", sessionAuthentication, authenticate, updateUserProfile);
+userRouter.put("/", authenticate, updateUserProfile);
 
 export default userRouter;

@@ -12,20 +12,20 @@ export const userApi = axios.create({
 });
 
 // Attach dynamic x-session-id for every request (reads localStorage at request time)
-userApi.interceptors.request.use((cfg) => {
-  try {
-    const sid = getFromLocalStorage("sessionId");
-    if (sid) {
-      cfg.headers["x-session-id"] = sid;
-    } else {
-      // ensure header removed if not set
-      delete cfg.headers["x-session-id"];
-    }
-  } catch (e) {
-    // ignore
-  }
-  return cfg;
-});
+// userApi.interceptors.request.use((cfg) => {
+//   try {
+//     const sid = getFromLocalStorage("sessionId");
+//     if (sid) {
+//       cfg.headers["x-session-id"] = sid;
+//     } else {
+//       // ensure header removed if not set
+//       delete cfg.headers["x-session-id"];
+//     }
+//   } catch (e) {
+//     // ignore
+//   }
+//   return cfg;
+// });
 
 // Response handler (propagate useful error shape)
 userApi.interceptors.response.use(
@@ -41,11 +41,6 @@ userApi.interceptors.response.use(
         const allowedPaths = ["/auth", "/logout"];
 
         if (!allowedPaths.includes(path)) {
-          try {
-            localStorage.removeItem("sessionId");
-          } catch (e) {
-            console.warn("Failed to remove sessionId from localStorage", e);
-          }
           window.location.href = "/auth";
         }
 

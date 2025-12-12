@@ -16,19 +16,19 @@ const requestRouter = express.Router();
 
 requestRouter.get(
   "/",
-  sessionAuthentication,
+
   authenticate,
   listRequestsController
 );
 requestRouter.get(
   "/:requestId",
-  sessionAuthentication,
+
   authenticate,
   getRequestController
 );
 requestRouter.post(
   "/",
-  sessionAuthentication,
+
   authenticate,
   validateRequestCreation,
   createRequestController
@@ -36,13 +36,13 @@ requestRouter.post(
 
 requestRouter.get(
   "/user/:userId",
-  sessionAuthentication,
+
   authenticate,
   listMyRequestsController
 );
 requestRouter.patch(
   "/:requestId",
-  sessionAuthentication,
+
   authenticate,
   updateRequestStatusController
 );

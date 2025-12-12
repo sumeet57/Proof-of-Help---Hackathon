@@ -10,7 +10,6 @@ export const donationApi = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "x-session-id": sessionId,
   },
 });
 
