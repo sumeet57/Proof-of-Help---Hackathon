@@ -20,6 +20,7 @@ export const UserContextProvider = ({ children }) => {
       setLoading(true);
       const response = await userApi.get("/");
       if (response) {
+        console.log("Fetched user data:", response.data);
         setUser(response.data);
       }
     } catch (error) {
@@ -35,8 +36,10 @@ export const UserContextProvider = ({ children }) => {
       const response = await userApi.post("/register", userData);
       if (response.status === 201) {
         await getUser();
-        navigate(-1);
         toast.success(response.data.message);
+        if (user) {
+          navigate("/home");
+        }
       }
       return response;
     } catch (error) {
@@ -51,11 +54,12 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/login", userData);
-      if (response.status === 200) {
-        await getUser();
-        navigate(-1);
-        toast.success(response.data.message);
+      await getUser();
+      toast.success(response.data.message);
+      if (user) {
+        navigate("/home");
       }
+
       return response;
     } catch (error) {
       toast.error(error.error || error);
