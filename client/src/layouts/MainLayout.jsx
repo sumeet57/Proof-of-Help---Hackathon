@@ -25,7 +25,6 @@ const navItems = [
   { key: "dashboard", label: "Dashboard", Icon: FiGrid },
   { key: "donations", label: "Donations", Icon: FiGift },
   { key: "profile", label: "Profile", Icon: FiUser },
-  { key: "activity", label: "Activity", Icon: FiActivity },
 ];
 
 const MainLayout = ({ children }) => {
@@ -76,13 +75,23 @@ const MainLayout = ({ children }) => {
           </div>
 
           <div className="flex lg:hidden items-center gap-3">
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60">
+            <button
+              onClick={() => {
+                navigate("/service");
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60"
+            >
               <LuBadgePlus className="text-lg text-orange-400" />
               <span className="text-sm font-semibold">{requestsCount}</span>
               <span className="text-xs text-stone-300">Requests</span>
             </button>
 
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60">
+            <button
+              onClick={() => {
+                navigate("/service");
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60"
+            >
               <LuBadgePlus className="text-lg text-orange-400" />
               <span className="text-sm font-semibold">{boastsCount}</span>
               <span className="text-xs text-stone-300">Boasts</span>

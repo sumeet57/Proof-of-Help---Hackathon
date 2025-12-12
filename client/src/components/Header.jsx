@@ -35,7 +35,7 @@ const Header = () => {
   const closeMenu = () => setIsMenuOpen(false);
 
   const navItems = [
-    { to: "/", label: "Home" },
+    { to: "/home", label: "Home" },
     ...(user
       ? [{ to: "/logout", label: "Logout" }]
       : [{ to: "/auth", label: "Sign In" }]),

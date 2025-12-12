@@ -15,6 +15,7 @@ const navItems = [
   { key: "home", label: "Home", Icon: FiHome },
   { key: "dashboard", label: "Dashboard", Icon: FiGrid },
   { key: "donations", label: "Donations", Icon: FiGift },
+
   { key: "profile", label: "Profile", Icon: FiUser },
 ];
 

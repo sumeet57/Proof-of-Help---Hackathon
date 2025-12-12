@@ -143,12 +143,14 @@ const Landing = () => {
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-stone-100">
-              Help others — transparently, instantly.
+              Help others - transparently, instantly.
             </h1>
 
             <p className="mt-3 text-stone-300 text-base md:text-lg">
-              A lightweight Web3 donation platform. Post needs, receive
-              peer-to-peer donations, and build trust with transparent records.
+              The lightweight Block-chain based fundraising & donation platform
+              with 0% transaction fees. Receive instant, peer-to-peer funding
+              and build donor trust with transparent, verifiable records
+              ensuring visibility via web3.
             </p>
 
             <div className="mt-6 flex justify-center gap-3 flex-wrap">
