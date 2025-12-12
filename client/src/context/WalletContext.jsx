@@ -8,7 +8,7 @@ import {
   getNetwork,
   getBalance,
 } from "../services/web3.service.js";
-import { userApi } from "../interceptors/user.api.js";
+import { userApi } from "../interceptors/User.api.js";
 import {
   EXPECTED_CHAIN_ID,
   NETWORK_NAME,
