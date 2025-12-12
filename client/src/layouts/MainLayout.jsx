@@ -1,24 +1,31 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FiHome, FiGrid, FiGift, FiUser, FiActivity } from "react-icons/fi";
+import {
+  FiHome,
+  FiGrid,
+  FiGift,
+  FiUser,
+  FiActivity,
+  FiX,
+} from "react-icons/fi";
+import { CiCirclePlus, CiWallet } from "react-icons/ci";
+import { LuBadgePlus } from "react-icons/lu";
 import { LayoutContext } from "../context/LayoutContext";
 import { UserContext } from "../context/UserContext";
 import Aside from "../components/Aside";
-import { CiCirclePlus } from "react-icons/ci";
-import { LuBadgePlus } from "react-icons/lu";
 import Home from "../pages/Home";
 import WalletButton from "../components/WalletButton";
-import { FiX } from "react-icons/fi";
-import { CiWallet } from "react-icons/ci";
 import Dashboard from "../pages/Dashboard";
 import UserDonation from "../pages/UserDonation";
 import Profile from "../pages/Profile";
 import { useNavigate } from "react-router-dom";
+
 const navItems = [
   { key: "home", label: "Home", Icon: FiHome },
   { key: "dashboard", label: "Dashboard", Icon: FiGrid },
   { key: "donations", label: "Donations", Icon: FiGift },
   { key: "profile", label: "Profile", Icon: FiUser },
+  { key: "activity", label: "Activity", Icon: FiActivity },
 ];
 
 const MainLayout = ({ children }) => {
@@ -47,24 +54,20 @@ const MainLayout = ({ children }) => {
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60">
-              <LuBadgePlus
-                onClick={() => {
-                  navigate("/service");
-                }}
-                className="text-xl text-orange-400"
-              />
+            <button
+              onClick={() => navigate("/service")}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60"
+            >
+              <LuBadgePlus className="text-xl text-orange-400" />
               <span className="text-sm font-semibold">{requestsCount}</span>
               <span className="text-sm text-stone-300">Requests</span>
             </button>
 
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60">
-              <LuBadgePlus
-                onClick={() => {
-                  navigate("/service");
-                }}
-                className="text-xl text-orange-400"
-              />
+            <button
+              onClick={() => navigate("/service")}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60"
+            >
+              <LuBadgePlus className="text-xl text-orange-400" />
               <span className="text-sm font-semibold">{boastsCount}</span>
               <span className="text-sm text-stone-300">Boasts</span>
             </button>
@@ -88,18 +91,23 @@ const MainLayout = ({ children }) => {
         </div>
 
         <section>
-          {sideBarSelected === "home" && <Home />}
-          {sideBarSelected === "dashboard" && <Dashboard />}
-          {sideBarSelected === "donations" && <UserDonation />}
-          {sideBarSelected === "profile" && <Profile />}
-
-          {children}
+          {children ? (
+            children
+          ) : (
+            <>
+              {sideBarSelected === "home" && <Home />}
+              {sideBarSelected === "dashboard" && <Dashboard />}
+              {sideBarSelected === "donations" && <UserDonation />}
+              {sideBarSelected === "profile" && <Profile />}
+            </>
+          )}
         </section>
 
         <div className="lg:hidden fixed right-4 bottom-24 z-50">
           <button
             onClick={() => setShowWallet((s) => !s)}
             className="w-14 h-14 rounded-full bg-orange-400 shadow-xl flex items-center justify-center text-zinc-900"
+            aria-label="Toggle wallet"
           >
             {showWallet ? (
               <FiX className="text-2xl" />
@@ -111,7 +119,7 @@ const MainLayout = ({ children }) => {
 
         {showWallet && (
           <div
-            className="lg:hidden h-screen fixed inset-0 z-100 flex items-center justify-center"
+            className="lg:hidden h-screen fixed inset-0 z-50 flex items-center justify-center"
             onClick={() => setShowWallet(false)}
           >
             <div className="absolute inset-0 bg-black/80" />
@@ -122,8 +130,10 @@ const MainLayout = ({ children }) => {
             >
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-stone-100 text-lg font-semibold">Wallet</h3>
-
-                <button onClick={() => setShowWallet(false)}>
+                <button
+                  onClick={() => setShowWallet(false)}
+                  aria-label="Close wallet"
+                >
                   <FiX className="text-stone-300" size={20} />
                 </button>
               </div>

@@ -16,8 +16,8 @@ const requestRouter = express.Router();
 
 requestRouter.get(
   "/",
-  sessionAuthentication,
-  authenticate,
+  //   sessionAuthentication,
+  //   authenticate,
   listRequestsController
 );
 requestRouter.get(

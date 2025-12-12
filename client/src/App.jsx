@@ -1,121 +1,76 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Auth from "./pages/Auth";
-import { UserContextProvider } from "./context/UserContext";
 import { ToastContainer } from "react-toastify";
+
+import ScrollToTop from "./components/ScrollToTop";
+
+// Context Providers
+import { UserContextProvider } from "./context/UserContext";
 import { LayoutContextProvider } from "./context/LayoutContext";
-import MainLayout from "./layouts/MainLayout";
-import Header from "./components/Header";
-import Landing from "./pages/Landing";
-import { RequestContextProvider } from "./context/RequestContext";
 import { WalletContextProvider } from "./context/WalletContext";
+import { RequestContextProvider } from "./context/RequestContext";
+import { DonationContextProvider } from "./context/DonationContext";
+
+// Layout + Pages
+import MainLayout from "./layouts/MainLayout";
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
+import Logout from "./pages/Logout";
 import Create from "./pages/request/Create";
 import Details from "./pages/request/Details";
-import { DonationContextProvider } from "./context/DonationContext";
 import Donation from "./pages/Donation";
-import Logout from "./pages/Logout";
 import Service from "./pages/Service";
-const App = () => {
+import Header from "./components/Header";
+
+export default function App() {
   return (
     <>
       <ToastContainer />
+
       <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <LayoutContextProvider>
-                <UserContextProvider>
-                  <Landing />
-                </UserContextProvider>
-              </LayoutContextProvider>
-            }
-          />
-          <Route
-            path="/auth"
-            element={
-              <UserContextProvider>
-                <Auth />
-              </UserContextProvider>
-            }
-          />
-          <Route
-            path="/home"
-            element={
-              <WalletContextProvider>
-                <DonationContextProvider>
-                  <LayoutContextProvider>
-                    <UserContextProvider>
-                      <RequestContextProvider>
-                        <MainLayout />
-                      </RequestContextProvider>
-                    </UserContextProvider>
-                  </LayoutContextProvider>
-                </DonationContextProvider>
-              </WalletContextProvider>
-            }
-          />
-          <Route
-            path="/create"
-            element={
-              <WalletContextProvider>
+        <ScrollToTop />
+
+        {/* All global contexts wrapped ONCE */}
+        <UserContextProvider>
+          <WalletContextProvider>
+            <RequestContextProvider>
+              <DonationContextProvider>
                 <LayoutContextProvider>
-                  <UserContextProvider>
-                    <RequestContextProvider>
-                      <Create />
-                    </RequestContextProvider>
-                  </UserContextProvider>
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/auth" element={<Auth />} />
+
+                    {/* Protected App Routes (Inside MainLayout) */}
+                    <Route path="/home" element={<MainLayout />} />
+                    <Route path="/create" element={<Create />} />
+
+                    {/* Request Details + Donate Nested Route */}
+                    <Route path="/:requestId" element={<Details />}>
+                      <Route path="donate" element={<Donation />} />
+                    </Route>
+
+                    {/* Services Page (Header + Content) */}
+                    <Route
+                      path="/service"
+                      element={
+                        <>
+                          <Header />
+                          <Service />
+                        </>
+                      }
+                    />
+
+                    {/* Logout */}
+                    <Route path="/logout" element={<Logout />} />
+                  </Routes>
                 </LayoutContextProvider>
-              </WalletContextProvider>
-            }
-          />
-          <Route
-            path="/:requestId"
-            element={
-              <WalletContextProvider>
-                <LayoutContextProvider>
-                  <UserContextProvider>
-                    <RequestContextProvider>
-                      <Details />
-                    </RequestContextProvider>
-                  </UserContextProvider>
-                </LayoutContextProvider>
-              </WalletContextProvider>
-            }
-            children={
-              <Route
-                path="donate"
-                element={
-                  <DonationContextProvider>
-                    <Donation />
-                  </DonationContextProvider>
-                }
-              />
-            }
-          />
-          <Route
-            path="/logout"
-            element={
-              <UserContextProvider>
-                <Logout />
-              </UserContextProvider>
-            }
-          />
-          <Route
-            path="/service"
-            element={
-              <LayoutContextProvider>
-                <UserContextProvider>
-                  <Header />
-                  <Service />
-                </UserContextProvider>
-              </LayoutContextProvider>
-            }
-          />
-        </Routes>
+              </DonationContextProvider>
+            </RequestContextProvider>
+          </WalletContextProvider>
+        </UserContextProvider>
       </BrowserRouter>
     </>
   );
-};
-
-export default App;
+}

@@ -35,18 +35,26 @@ userApi.interceptors.response.use(
     if (error.response) {
       // If 401 explicitly redirect to auth (you can also emit an event instead)
       if (error.response.status === 401) {
-        if (window.location.pathname !== "/auth") {
-          // Clear local sessionId if server says unauthorized
+        const path = window.location.pathname;
+
+        // pages where we don't want to force-redirect
+        const allowedPaths = ["/", "/home", "/auth", "/logout"];
+
+        if (!allowedPaths.includes(path)) {
           try {
             localStorage.removeItem("sessionId");
-          } catch (e) {}
+          } catch (e) {
+            console.warn("Failed to remove sessionId from localStorage", e);
+          }
           window.location.href = "/auth";
         }
+
         return Promise.reject({
           status: 401,
           error: error.response.data?.error || "Unauthorized",
         });
       }
+
       // propagate server error body (consistent)
       return Promise.reject({
         status: error.response.status,

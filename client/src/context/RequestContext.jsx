@@ -14,7 +14,7 @@ export const RequestContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await requestApi.get("/");
-      console.log(response);
+
       setRequests(response.data.items);
     } catch (error) {
       setError(error);
@@ -26,9 +26,9 @@ export const RequestContextProvider = ({ children }) => {
   const fetchRequest = async (requestId) => {
     try {
       setLoading(true);
-      console.log("Fetching request with ID:", requestId);
+
       const response = await requestApi.get(`/${requestId}`);
-      console.log(response.data.request);
+
       setSelectedRequest(response.data.request);
     } catch (error) {
       setError(error);

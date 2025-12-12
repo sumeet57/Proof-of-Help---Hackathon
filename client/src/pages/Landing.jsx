@@ -129,12 +129,6 @@ const Landing = () => {
             >
               How it Works
             </a>
-            <button
-              onClick={() => navigate("/auth")}
-              className="ml-2 px-3 py-1 rounded-md bg-zinc-800/40 hover:bg-zinc-800/60 text-stone-200"
-            >
-              Log in
-            </button>
           </div>
         </div>
       </nav>
