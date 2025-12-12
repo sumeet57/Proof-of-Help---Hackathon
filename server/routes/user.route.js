@@ -5,6 +5,7 @@ import {
   logoutUser,
   registerUser,
   setWalletController,
+  updateUserProfile,
 } from "../controllers/user.controller.js";
 import {
   authenticate,
@@ -24,5 +25,6 @@ userRouter.post(
   authenticate,
   setWalletController
 );
+userRouter.put("/", sessionAuthentication, authenticate, updateUserProfile);
 
 export default userRouter;

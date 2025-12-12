@@ -18,6 +18,7 @@ export default function Donation() {
     donate,
     loading: donating,
     error: donateError,
+    validateBeforeDonation,
   } = useContext(DonationContext);
   const { connected, connectWallet } = useContext(WalletContext);
 
@@ -97,6 +98,15 @@ export default function Donation() {
       return;
     }
 
+    if (requestId) {
+      try {
+        await validateBeforeDonation(requestId);
+      } catch (error) {
+        return setError(error.message || "Donation validation failed");
+      }
+    }
+    console.log("Validated donation for request ID:", requestId);
+
     // use current selectedRequest first
     let localRequest = selectedRequestRef.current || selectedRequest;
     if (!localRequest) {
@@ -128,15 +138,6 @@ export default function Donation() {
         localRequest = updated;
       }
     }
-
-    // debug
-    // eslint-disable-next-line no-console
-    console.log("Donation target resolution:", {
-      requestId,
-      toUserId,
-      toWallet,
-      localRequest,
-    });
 
     if (!toUserId) {
       setError("Recipient user id is missing. Cannot proceed.");

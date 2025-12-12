@@ -69,6 +69,25 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+export const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { fullName, walletId } = req.body;
+    const update = {};
+    if (fullName) update.fullName = fullName;
+    if (walletId !== undefined) update.walletId = walletId;
+    const updatedUser = await User.findByIdAndUpdate(userId, update, {
+      new: true,
+    });
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const logoutUser = async (req, res) => {
   try {
     res.clearCookie("accessToken", accessTokenOptions);
@@ -95,8 +114,6 @@ export const setWalletController = async (req, res) => {
 
     const { walletId } = req.body;
 
-    // walletId may be null to clear
-    console.log("setWalletController called with walletId:", walletId);
     const updated = await updateWalletId(userId, walletId ?? null);
 
     return res.json({

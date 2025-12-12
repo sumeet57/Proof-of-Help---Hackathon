@@ -70,10 +70,28 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/logout");
+      window.location.href = "/";
       if (response.status === 200) {
         setUser(null);
         removeFromLocalStorage("sessionId");
         toast.success(response.data.message);
+      }
+      return response;
+    } catch (error) {
+      toast.error(error);
+      return Promise.reject(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const update = async (userData) => {
+    try {
+      setLoading(true);
+      const response = await userApi.put("/", userData);
+
+      if (response.status === 200) {
+        setUser(response.data);
+        toast.success("Profile updated successfully");
       }
       return response;
     } catch (error) {
@@ -90,7 +108,16 @@ export const UserContextProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, loading, setLoading, register, login, getUser, logout }}
+      value={{
+        user,
+        loading,
+        setLoading,
+        register,
+        login,
+        getUser,
+        update,
+        logout,
+      }}
     >
       {children}
     </UserContext.Provider>

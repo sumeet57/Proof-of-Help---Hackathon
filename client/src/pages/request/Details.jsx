@@ -155,54 +155,6 @@ export default function Details() {
               </div>
             </div>
           </div>
-
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold text-stone-100 mb-2">
-              Donation History
-            </h3>
-            {req.donations && req.donations.length > 0 ? (
-              <ul className="space-y-3">
-                {req.donations.map((d) => (
-                  <li
-                    key={d._id}
-                    className="p-3 bg-zinc-900/20 border border-zinc-800 rounded-lg"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-stone-200">
-                        <div className="font-medium">{d.fromWallet}</div>
-                        <div className="text-xs text-stone-400">
-                          {Number(d.amount?.value || 0)}{" "}
-                          {d.amount?.currencySymbol ||
-                            req.target?.currencySymbol}
-                        </div>
-                      </div>
-                      <div className="text-xs text-stone-300">
-                        {d.txTimestamp
-                          ? new Date(d.txTimestamp).toLocaleString()
-                          : new Date(d.createdAt).toLocaleString()}
-                        <div>
-                          <a
-                            href={`https://${
-                              req.target?.network === "sepolia"
-                                ? "sepolia."
-                                : ""
-                            }etherscan.io/tx/${d.txHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-orange-400"
-                          >
-                            View TX
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-sm text-stone-300">No donations yet.</div>
-            )}
-          </div>
         </div>
       </div>
     </div>

@@ -3,7 +3,9 @@ import {
   getDonationById,
   listDonations,
   listDonationsForRequest,
+  listMyDonations,
 } from "../services/donation.service.js";
+import { getRequestById } from "../services/request.service.js";
 import { getUserWalletId } from "../services/user.service.js";
 
 /**
@@ -166,5 +168,44 @@ export async function listDonationsForRequestController(req, res) {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Server error" });
+  }
+}
+
+export async function listMyDonationsController(req, res) {
+  try {
+    const response = await listMyDonations(req.userId, req.query);
+
+    return res.json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+export async function validateBeforeDonation(req, res) {
+  try {
+    const { requestId } = req.params;
+    console.log("Validating donation for request ID:", requestId);
+    const request = await getRequestById(requestId);
+    console.log("Request fetched for validation:", request);
+    if (!request) {
+      const err = new Error("Request not found");
+      err.code = "REQUEST_NOT_FOUND";
+      throw err;
+    }
+    if (request.status !== "open") {
+      const err = new Error("Request is not open for donations");
+      err.code = "REQUEST_NOT_OPEN";
+      throw err;
+    }
+    if (
+      request?.target?.amount &&
+      request.totals?.totalReceived >= request.target.amount
+    ) {
+      const err = new Error("Request has already reached its target amount");
+      err.code = "TARGET_AMOUNT_REACHED";
+      throw err;
+    }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 }

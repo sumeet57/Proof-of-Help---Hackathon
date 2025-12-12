@@ -10,6 +10,7 @@ import {
   NETWORK_NAME,
 } from "../utils/web3.utils.js";
 import { donationApi } from "../interceptors/donation.api.js";
+import { toast } from "react-toastify";
 
 export const DonationContext = createContext({
   loading: false,
@@ -20,6 +21,7 @@ export const DonationContext = createContext({
 
 export const DonationContextProvider = ({ children }) => {
   const { connected, connectWallet } = useContext(WalletContext);
+  const [myDonations, setMyDonations] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -208,12 +210,42 @@ export const DonationContextProvider = ({ children }) => {
       return [];
     }
   }
+  async function fetchDonationsByUser(userId) {
+    try {
+      setLoading(true);
+      const res = await donationApi.get("/my");
+      console.log("fetchDonationsByUser", res.data.items);
+      setMyDonations(res.data.items || []);
+    } catch (err) {
+      console.warn("fetchDonationsByUser failed", err);
+      setMyDonations([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+  async function validateBeforeDonation(requestId) {
+    try {
+      setLoading(true);
+      const res = await donationApi.post(`/validate/${requestId}`);
+      return res.data;
+    } catch (error) {
+      setError(error);
+      console.error("Validation before donation failed", error);
+      toast.error(error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const value = {
     loading,
     error,
     donate,
     fetchDonationsForRequest,
+    fetchDonationsByUser,
+    myDonations,
+    validateBeforeDonation,
   };
 
   return (

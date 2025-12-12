@@ -13,6 +13,8 @@ import Create from "./pages/request/Create";
 import Details from "./pages/request/Details";
 import { DonationContextProvider } from "./context/DonationContext";
 import Donation from "./pages/Donation";
+import Logout from "./pages/Logout";
+import Service from "./pages/Service";
 const App = () => {
   return (
     <>
@@ -41,13 +43,15 @@ const App = () => {
             path="/home"
             element={
               <WalletContextProvider>
-                <LayoutContextProvider>
-                  <UserContextProvider>
-                    <RequestContextProvider>
-                      <MainLayout />
-                    </RequestContextProvider>
-                  </UserContextProvider>
-                </LayoutContextProvider>
+                <DonationContextProvider>
+                  <LayoutContextProvider>
+                    <UserContextProvider>
+                      <RequestContextProvider>
+                        <MainLayout />
+                      </RequestContextProvider>
+                    </UserContextProvider>
+                  </LayoutContextProvider>
+                </DonationContextProvider>
               </WalletContextProvider>
             }
           />
@@ -87,6 +91,25 @@ const App = () => {
                   </DonationContextProvider>
                 }
               />
+            }
+          />
+          <Route
+            path="/logout"
+            element={
+              <UserContextProvider>
+                <Logout />
+              </UserContextProvider>
+            }
+          />
+          <Route
+            path="/service"
+            element={
+              <LayoutContextProvider>
+                <UserContextProvider>
+                  <Header />
+                  <Service />
+                </UserContextProvider>
+              </LayoutContextProvider>
             }
           />
         </Routes>

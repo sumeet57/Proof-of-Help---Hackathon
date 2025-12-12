@@ -18,6 +18,7 @@ requestApi.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
+      console.log("API Error Response:", error.response);
       if (error.response.status === 401) {
         if (window.location.pathname !== "/auth") {
           window.location.href = "/auth";

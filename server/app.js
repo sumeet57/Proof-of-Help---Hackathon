@@ -18,7 +18,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-session-id"],
   })
 );
@@ -34,5 +34,11 @@ app.use("/api/donation", donationRouter);
 
 app.use("/", (req, res) => {
   res.json({ message: "Server is running" });
+});
+// Global error handler
+app.use((err, req, res, next) => {
+  console.log("Global Error Handler:", err.message);
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
 });
 export default app;

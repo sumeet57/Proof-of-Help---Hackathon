@@ -11,8 +11,10 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAllRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    async function load() {
+      await fetchAllRequests();
+    }
+    load();
   }, []);
 
   return (

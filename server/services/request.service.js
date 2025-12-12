@@ -17,6 +17,7 @@ export async function createRequestForUser(userId, payload) {
 
   return request;
 }
+
 export async function getRequestById(requestId) {
   return Request.findById(requestId).populate(
     "user",
@@ -30,7 +31,6 @@ export async function listRequests(filters = {}, options = {}) {
     limit = 10,
     status,
     category,
-    userId,
     sortBy = "createdAt",
     sortOrder = "desc",
   } = options;
@@ -39,7 +39,6 @@ export async function listRequests(filters = {}, options = {}) {
 
   if (status) query.status = status;
   if (category) query.category = category;
-  if (userId) query.user = userId;
 
   const skip = (Number(page) - 1) * Number(limit);
 
@@ -62,8 +61,14 @@ export async function listRequests(filters = {}, options = {}) {
     totalPages: Math.ceil(total / Number(limit)) || 1,
   };
 }
-export async function listRequestsForUser(userId, options = {}) {
-  return listRequests({}, { ...options, userId });
+
+export async function listRequestsForUser(userId) {
+  const response = await Request.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate("user", "fullName email walletId");
+  return {
+    items: response,
+  };
 }
 
 export async function updateRequestStatus(requestId, userId, newStatus) {
@@ -103,7 +108,6 @@ export async function updateRequestTotalsAfterDonation(requestId, amountValue) {
   request.totals.donorsCount += 1;
   request.totals.lastDonationAt = now;
 
-  // optionally auto-close if reached target
   if (
     request.target &&
     request.target.amount > 0 &&

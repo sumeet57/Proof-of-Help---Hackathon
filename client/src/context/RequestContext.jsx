@@ -28,9 +28,22 @@ export const RequestContextProvider = ({ children }) => {
       setLoading(true);
       console.log("Fetching request with ID:", requestId);
       const response = await requestApi.get(`/${requestId}`);
-      console.log(response);
+      console.log(response.data.request);
       setSelectedRequest(response.data.request);
     } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRequestByUser = async (userId) => {
+    try {
+      setLoading(true);
+      const response = await requestApi.get(`/user/${userId}`);
+      setRequests(response.data.items);
+    } catch (error) {
+      console.log("Error fetching requests by user:", error);
       setError(error);
     } finally {
       setLoading(false);
@@ -49,6 +62,19 @@ export const RequestContextProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const updateRequest = async (requestId, status) => {
+    try {
+      setLoading(true);
+      const res = await requestApi.patch(`/${requestId}`, status);
+      toast.success("Request updated successfully");
+      fetchRequestByUser(requestId); // Refresh user's requests
+      return res;
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <RequestContext.Provider
@@ -59,8 +85,10 @@ export const RequestContextProvider = ({ children }) => {
         selectedRequest,
         setSelectedRequest,
         fetchAllRequests,
+        fetchRequestByUser,
         fetchRequest,
         addRequest,
+        updateRequest,
       }}
     >
       {children}

@@ -382,7 +382,7 @@ const LandingPage = () => {
                   </div>
                   <button
                     onClick={() => {
-                      navigate("/purchase");
+                      navigate("/service");
                     }}
                     className="w-full py-3 bg-gradient-to-r from-orange-400 to-orange-600 rounded-xl font-bold hover:shadow-lg hover:shadow-orange-500/30 transition text-white"
                   >

@@ -10,12 +10,15 @@ import Home from "../pages/Home";
 import WalletButton from "../components/WalletButton";
 import { FiX } from "react-icons/fi";
 import { CiWallet } from "react-icons/ci";
+import Dashboard from "../pages/Dashboard";
+import UserDonation from "../pages/UserDonation";
+import Profile from "../pages/Profile";
+import { useNavigate } from "react-router-dom";
 const navItems = [
   { key: "home", label: "Home", Icon: FiHome },
   { key: "dashboard", label: "Dashboard", Icon: FiGrid },
   { key: "donations", label: "Donations", Icon: FiGift },
   { key: "profile", label: "Profile", Icon: FiUser },
-  { key: "activity", label: "Activity", Icon: FiActivity },
 ];
 
 const MainLayout = ({ children }) => {
@@ -26,6 +29,7 @@ const MainLayout = ({ children }) => {
 
   const requestsCount = user?.requests ?? user?.requestsCount ?? 0;
   const boastsCount = user?.boasts ?? user?.boastCount ?? 0;
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-zinc-900 text-stone-100 flex">
@@ -44,13 +48,23 @@ const MainLayout = ({ children }) => {
 
           <div className="hidden lg:flex items-center gap-4">
             <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60">
-              <LuBadgePlus className="text-xl text-orange-400" />
+              <LuBadgePlus
+                onClick={() => {
+                  navigate("/service");
+                }}
+                className="text-xl text-orange-400"
+              />
               <span className="text-sm font-semibold">{requestsCount}</span>
               <span className="text-sm text-stone-300">Requests</span>
             </button>
 
             <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800/40 hover:bg-zinc-800/60">
-              <LuBadgePlus className="text-xl text-orange-400" />
+              <LuBadgePlus
+                onClick={() => {
+                  navigate("/service");
+                }}
+                className="text-xl text-orange-400"
+              />
               <span className="text-sm font-semibold">{boastsCount}</span>
               <span className="text-sm text-stone-300">Boasts</span>
             </button>
@@ -75,33 +89,10 @@ const MainLayout = ({ children }) => {
 
         <section>
           {sideBarSelected === "home" && <Home />}
-          {sideBarSelected === "dashboard" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-800/30">
-                Dashboard content
-              </div>
-            </motion.div>
-          )}
-          {sideBarSelected === "donations" && (
-            <div className="space-y-4">
-              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-800/30">
-                Donations list
-              </div>
-              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-800/30">
-                Donation details
-              </div>
-            </div>
-          )}
-          {sideBarSelected === "profile" && (
-            <div className="p-4 sm:p-6 rounded-2xl bg-zinc-800/30">
-              Profile settings
-            </div>
-          )}
-          {sideBarSelected === "activity" && (
-            <div className="p-4 sm:p-6 rounded-2xl bg-zinc-800/30">
-              Recent activity
-            </div>
-          )}
+          {sideBarSelected === "dashboard" && <Dashboard />}
+          {sideBarSelected === "donations" && <UserDonation />}
+          {sideBarSelected === "profile" && <Profile />}
+
           {children}
         </section>
 

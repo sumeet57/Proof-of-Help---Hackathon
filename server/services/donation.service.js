@@ -68,7 +68,6 @@ export async function getDonationById(donationId) {
     .populate("request", "title");
 }
 
-// list donations with filters and pagination
 export async function listDonations(filters = {}, options = {}) {
   const {
     page = 1,
@@ -113,12 +112,10 @@ export async function listDonations(filters = {}, options = {}) {
   };
 }
 
-// List donations for a specific request
 export async function listDonationsForRequest(requestId, options = {}) {
   return listDonations({}, { ...options, requestId });
 }
 
-// List donations involving a specific user (as donor or receiver)
 export async function listDonationsForUser(userId, options = {}) {
   return listDonations(
     {},
@@ -126,4 +123,33 @@ export async function listDonationsForUser(userId, options = {}) {
       ...options,
     }
   );
+}
+
+export const listMyDonations = async (userId, options = {}) => {
+  return listDonationsForUser(userId, options);
+};
+
+export async function validateBeforeDonation() {
+  try {
+    const { requestId } = req.params;
+    const request = await Request.findById(requestId);
+    if (!request) {
+      const err = new Error("Request not found");
+      err.code = "REQUEST_NOT_FOUND";
+      throw err;
+    }
+    if (request.status !== "open") {
+      const err = new Error("Request is not open for donations");
+      err.code = "REQUEST_NOT_OPEN";
+      throw err;
+    }
+    if (
+      request?.target?.amount &&
+      request.totals?.totalReceived >= request.target.amount
+    ) {
+      const err = new Error("Request has already reached its target amount");
+      err.code = "TARGET_AMOUNT_REACHED";
+      throw err;
+    }
+  } catch (error) {}
 }

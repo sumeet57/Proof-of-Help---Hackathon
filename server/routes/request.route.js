@@ -7,6 +7,8 @@ import {
   listRequestsController,
   createRequestController,
   getRequestController,
+  listMyRequestsController,
+  updateRequestStatusController,
 } from "../controllers/request.controller.js";
 import { validateRequestCreation } from "../middlewares/validate.js";
 
@@ -30,6 +32,19 @@ requestRouter.post(
   authenticate,
   validateRequestCreation,
   createRequestController
+);
+
+requestRouter.get(
+  "/user/:userId",
+  sessionAuthentication,
+  authenticate,
+  listMyRequestsController
+);
+requestRouter.patch(
+  "/:requestId",
+  sessionAuthentication,
+  authenticate,
+  updateRequestStatusController
 );
 
 export default requestRouter;
