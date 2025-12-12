@@ -23,14 +23,14 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    const userId = await register({ fullName, email, password });
-    const tokens = generateToken(userId);
+    const user = await register({ fullName, email, password });
+    const tokens = generateToken(user._id);
 
     return res
       .status(201)
       .cookie("accessToken", tokens.accessToken, accessTokenOptions)
       .cookie("refreshToken", tokens.refreshToken, refreshTokenOptions)
-      .json({ message: "User registered successfully" });
+      .json({ message: "User registered successfully", user });
   } catch (error) {
     console.error("Error in registerUser:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -41,15 +41,15 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const userId = await login({ email, password });
+    const user = await login({ email, password });
 
-    const tokens = generateToken(userId);
+    const tokens = generateToken(user._id);
 
     return res
       .status(200)
       .cookie("accessToken", tokens.accessToken, accessTokenOptions)
       .cookie("refreshToken", tokens.refreshToken, refreshTokenOptions)
-      .json({ message: "Login successful" });
+      .json({ message: "Login successful", user });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

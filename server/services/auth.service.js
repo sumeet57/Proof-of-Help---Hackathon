@@ -32,7 +32,7 @@ export const register = async (data) => {
     });
     await user.save();
 
-    return user._id;
+    return user;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -51,7 +51,7 @@ export const login = async (data) => {
       if (!comparedPassword) {
         throw new Error("Invalid email or password");
       } else {
-        return user._id;
+        return user;
       }
     }
   } catch (error) {

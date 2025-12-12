@@ -34,13 +34,14 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/register", userData);
-      if (response.status === 201) {
-        await getUser();
-        toast.success(response.data.message);
-        if (user) {
-          navigate("/home");
-        }
-      }
+
+      setUser(response.data.user);
+      await getUser();
+
+      toast.success(response.data.message);
+
+      navigate("/home");
+
       return response;
     } catch (error) {
       toast.error(error.error || error);
@@ -54,11 +55,11 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/login", userData);
+      setUser(response.data.user);
       await getUser();
       toast.success(response.data.message);
-      if (user) {
-        navigate("/home");
-      }
+
+      navigate("/home");
 
       return response;
     } catch (error) {
