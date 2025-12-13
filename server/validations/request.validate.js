@@ -3,14 +3,22 @@ import Joi from "joi";
 const targetSchema = Joi.object({
   amount: Joi.number().min(0.01).required().messages({
     "number.base": "Target amount must be a number",
-    "number.min": "Target amount must be greater than zero",
+    "number.min": "Target amount must be greater than 0.01",
     "any.required": "Target amount is required",
   }),
   currencySymbol: Joi.string().trim().uppercase().default("ETH").messages({
     "string.base": "Currency symbol must be a string",
   }),
-  network: Joi.string().trim().lowercase().default("sepolia").messages({
-    "string.base": "Network must be a string",
+  // Renamed to match the model and frontend payload
+  networkName: Joi.string().trim().required().messages({
+    "string.base": "Network name must be a string",
+    "any.required": "Network name is required",
+  }),
+  // New field: Required to ensure the Chain ID is correctly set for donation enforcement
+  expectedChainId: Joi.number().integer().min(1).required().messages({
+    "number.base": "Chain ID must be a number",
+    "number.min": "Chain ID must be a positive integer",
+    "any.required": "Expected Chain ID is required",
   }),
 });
 
@@ -63,4 +71,4 @@ export const updateRequestSchema = Joi.object({
     "string.base": "Status must be a string",
     "any.only": "Status must be one of: open, closed, or flagged",
   }),
-}).min(1); // Ensures that at least one field is provided for update
+}).min(1);

@@ -4,7 +4,8 @@ const TargetSchema = new mongoose.Schema(
   {
     amount: { type: Number, default: 0 },
     currencySymbol: { type: String, default: "ETH" },
-    network: { type: String, default: "sepolia" },
+    networkName: { type: String, default: "Sepolia" },
+    expectedChainId: { type: Number, required: true },
   },
   { _id: false }
 );
@@ -42,7 +43,6 @@ const RequestSchema = new mongoose.Schema(
       default: "other",
       index: true,
     },
-    // Goal
     target: {
       type: TargetSchema,
       default: () => ({}),

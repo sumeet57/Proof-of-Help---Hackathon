@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RequestContext } from "../context/RequestContext";
 import { UserContext } from "../context/UserContext";
-import { requestApi } from "../interceptors/request.api";
 import { toast } from "react-toastify";
 import { FiMoreVertical } from "react-icons/fi";
 
@@ -11,14 +10,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
-  // ONLY these from context — we will use exactly this:
   const { requests, fetchRequestByUser, updateRequest } =
     useContext(RequestContext);
 
   const [loading, setLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState(null);
 
-  // ✔ Fetch only user's requests
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -33,8 +30,6 @@ export default function Dashboard() {
     }
     load();
   }, []);
-
-  // ------------ ACTION HANDLERS -------------
 
   const handleView = (id) => navigate(`/${id}`);
   const handleAnalytics = (id) => navigate(`/analytics/${id}`);

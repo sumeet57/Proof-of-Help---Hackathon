@@ -1,4 +1,5 @@
 export const saveToLocalStorage = (key, value) => {
+  value = JSON.stringify(value);
   localStorage.setItem(key, value);
   return true;
 };
@@ -6,6 +7,10 @@ export const saveToLocalStorage = (key, value) => {
 export const getFromLocalStorage = (key) => {
   const value = localStorage.getItem(key);
   return value ? value : null;
+};
+export const getParsedFromLocalStorage = (key) => {
+  const value = localStorage.getItem(key);
+  return value ? JSON.parse(value) : null;
 };
 
 export const removeFromLocalStorage = (key) => {

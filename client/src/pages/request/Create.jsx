@@ -4,11 +4,42 @@ import { useNavigate } from "react-router-dom";
 import { RequestContext } from "../../context/RequestContext.jsx";
 import { WalletContext } from "../../context/WalletContext";
 import Loading from "../../components/Loading.jsx";
-import { CURRENCY_SYMBOL } from "../../utils/web3.utils.js";
 
 const CATEGORY_OPTIONS = ["education", "medical", "disaster", "food", "other"];
 const COINGECKO_URL =
   "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr";
+
+const NETWORK_MAP = {
+  ethereum: {
+    chainId: 1,
+    name: "Ethereum Mainnet",
+    currencySymbol: "ETH",
+    type: "main",
+    chainIdHex: "0x1",
+  },
+  polygon: {
+    chainId: 137,
+    name: "Polygon Mainnet",
+    currencySymbol: "MATIC",
+    type: "main",
+    chainIdHex: "0x89",
+  },
+  sepolia: {
+    chainId: 11155111,
+    name: "Sepolia",
+    currencySymbol: "ETH",
+    type: "test",
+    chainIdHex: "0xaa36a7",
+  },
+  "polygon-mumbai": {
+    chainId: 80001,
+    name: "Polygon Mumbai",
+    currencySymbol: "MATIC",
+    type: "test",
+    chainIdHex: "0x13881",
+  },
+};
+const DEFAULT_NETWORK = "sepolia";
 
 export default function Create() {
   const navigate = useNavigate();
@@ -24,13 +55,20 @@ export default function Create() {
   const [ethAmount, setEthAmount] = useState("0");
   const [priceLoading, setPriceLoading] = useState(false);
 
-  const [currencySymbol] = useState(CURRENCY_SYMBOL || "ETH");
-  const [network, setNetwork] = useState("sepolia");
+  const [currencySymbol, setCurrencySymbol] = useState(
+    NETWORK_MAP[DEFAULT_NETWORK].currencySymbol
+  );
+  const [network, setNetwork] = useState(DEFAULT_NETWORK);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const debounceRef = useRef(null);
+
+  useEffect(() => {
+    const symbol = NETWORK_MAP[network]?.currencySymbol || "ETH";
+    setCurrencySymbol(symbol);
+  }, [network]);
 
   useEffect(() => {
     let active = true;
@@ -90,9 +128,16 @@ export default function Create() {
     const ok = await ensureWalletConnected();
     if (!ok) return;
 
+    const selectedNetwork = NETWORK_MAP[network];
+    if (!selectedNetwork) {
+      return setError("Invalid network selected.");
+    }
+
     const eth = Number(ethAmount);
     if (!eth || eth < 0.01) {
-      return setError(`Target must be at least 0.01 ${currencySymbol}`);
+      return setError(
+        `Target must be at least 0.01 ${selectedNetwork.currencySymbol}`
+      );
     }
 
     const payload = {
@@ -101,8 +146,9 @@ export default function Create() {
       category,
       target: {
         amount: eth,
-        currencySymbol,
-        network,
+        currencySymbol: selectedNetwork.currencySymbol,
+        networkName: selectedNetwork.name,
+        expectedChainId: selectedNetwork.chainId,
       },
     };
 
@@ -199,9 +245,12 @@ export default function Create() {
                   onChange={(e) => setNetwork(e.target.value)}
                   className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-stone-100 focus:outline-none focus:ring-2 focus:ring-orange-400/40"
                 >
-                  <option value="sepolia">Sepolia</option>
-                  <option value="goerli">Goerli</option>
-                  <option value="polygon-mumbai">Polygon Mumbai</option>
+                  {Object.keys(NETWORK_MAP).map((key) => (
+                    <option key={key} value={key}>
+                      {NETWORK_MAP[key].name} (
+                      {NETWORK_MAP[key].type === "main" ? "Main" : "Test"})
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -269,6 +318,7 @@ export default function Create() {
                     setDescription("");
                     setFiatAmount("");
                     setCategory("other");
+                    setNetwork(DEFAULT_NETWORK);
                     setError(null);
                     setEthAmount("0");
                   }}

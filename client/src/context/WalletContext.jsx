@@ -7,16 +7,11 @@ import {
   getAccounts,
   getNetwork,
   getBalance,
-} from "../services/web3.service.js";
-import { userApi } from "../interceptors/userApi.js";
-import {
-  EXPECTED_CHAIN_ID,
-  NETWORK_NAME,
-  CURRENCY_SYMBOL,
 } from "../utils/web3.utils.js";
+import { userApi } from "../interceptors/userApi.js";
 
 const MANUAL_DISCONNECT_KEY = "wallet:manuallyDisconnected";
-const MANUAL_DISCONNECT_TTL_MS = 1000 * 60 * 60 * 24; // 24h
+const MANUAL_DISCONNECT_TTL_MS = 1000 * 60 * 60 * 24;
 
 function setManualDisconnectFlag() {
   const payload = { ts: Date.now() };
@@ -52,6 +47,7 @@ export const WalletContext = createContext({
   loading: false,
   connectWallet: async () => {},
   disconnectWallet: async () => {},
+  initWallet: async () => {},
   refreshBalance: async () => {},
   switchNetwork: async (chainIdHex) => {},
 });
@@ -65,32 +61,6 @@ export const WalletContextProvider = ({ children }) => {
   const [chain, setChain] = useState(null);
   const [balance, setBalance] = useState("0");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!hasEthereum()) return;
-    (async () => {
-      try {
-        if (isManualDisconnectActive()) return;
-        const accts = await getAccounts();
-        if (!accts || accts.length === 0) return;
-        const acct = accts[0];
-        const p = createProvider();
-        if (!p) return;
-        const s = await p.getSigner().catch(() => null);
-        setProvider(p);
-        setSigner(s);
-        setAddress(acct);
-        const net = await getNetwork(p).catch(() => null);
-        setChain(net);
-        const bal = await getBalance(p, acct).catch(() => "0");
-        setBalance(bal);
-        setConnected(true);
-        await linkWalletToBackendIfAllowed(acct);
-      } catch (err) {
-        console.warn("Wallet auto-connect check failed", err);
-      }
-    })();
-  }, []);
 
   async function linkWalletToBackendIfAllowed(addressToSave) {
     try {
@@ -162,6 +132,34 @@ export const WalletContextProvider = ({ children }) => {
     }
   }
 
+  async function initWallet() {
+    if (!hasEthereum()) return;
+    setLoading(true);
+    try {
+      if (isManualDisconnectActive()) return;
+      const accts = await getAccounts();
+      if (!accts || accts.length === 0) return;
+
+      const acct = accts[0];
+      const p = createProvider();
+      if (!p) return;
+
+      const s = await p.getSigner().catch(() => null);
+      setProvider(p);
+      setSigner(s);
+      setAddress(acct);
+      const net = await getNetwork(p).catch(() => null);
+      setChain(net);
+      const bal = await getBalance(p, acct).catch(() => "0");
+      setBalance(bal);
+      setConnected(true);
+      await linkWalletToBackendIfAllowed(acct);
+    } catch (err) {
+      console.warn("Wallet initialization check failed", err);
+    } finally {
+      setLoading(false);
+    }
+  }
   useEffect(() => {
     if (!hasEthereum()) return;
     const eth = window.ethereum;
@@ -173,14 +171,7 @@ export const WalletContextProvider = ({ children }) => {
     };
     eth.on("accountsChanged", accountsHandler);
     eth.on("chainChanged", chainHandler);
-    (async () => {
-      try {
-        const accts = await getAccounts();
-        if (accts && accts.length) {
-          await handleAccountsChanged(accts);
-        }
-      } catch (e) {}
-    })();
+
     return () => {
       try {
         if (eth.removeListener) {
@@ -270,11 +261,9 @@ export const WalletContextProvider = ({ children }) => {
       loading,
       connectWallet,
       disconnectWallet,
+      initWallet,
       refreshBalance,
       switchNetwork,
-      EXPECTED_CHAIN_ID,
-      NETWORK_NAME,
-      CURRENCY_SYMBOL,
     }),
     [connected, address, ensName, chain, balance, provider, signer, loading]
   );

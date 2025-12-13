@@ -5,7 +5,6 @@ import { RequestContext } from "../context/RequestContext";
 import { DonationContext } from "../context/DonationContext";
 import { WalletContext } from "../context/WalletContext";
 import Loading from "../components/Loading";
-import { CURRENCY_SYMBOL } from "../utils/web3.utils.js";
 import { LayoutContext } from "../context/LayoutContext.jsx";
 import { toast } from "react-toastify";
 import { fetchEthToInrRate } from "../utils/ethToInr";
@@ -25,7 +24,11 @@ export default function Donation() {
     validateBeforeDonation,
   } = useContext(DonationContext);
 
-  const { connected, connectWallet } = useContext(WalletContext);
+  // --- START OF CHANGE: Consuming Wallet Context Details ---
+  const { connected, connectWallet, address, chain } =
+    useContext(WalletContext);
+  // --- END OF CHANGE ---
+
   const { setSideBarSelected } = useContext(LayoutContext);
 
   const selectedRequestRef = useRef(selectedRequest);
@@ -33,23 +36,19 @@ export default function Donation() {
 
   const [amountEth, setAmountEth] = useState("");
   const [amountINR, setAmountINR] = useState("");
-  const [ethRate, setEthRate] = useState(200000); // fallback
+  const [ethRate, setEthRate] = useState(200000);
   const [error, setError] = useState(null);
   const [successTx, setSuccessTx] = useState(null);
   const [resolving, setResolving] = useState(false);
 
-  // Sync ref
   useEffect(() => {
     selectedRequestRef.current = selectedRequest;
   }, [selectedRequest]);
 
-  // Fetch request
   useEffect(() => {
     if (requestId) fetchRequest(requestId);
-    // eslint-disable-next-line
   }, [requestId]);
 
-  // Fetch ETH rate
   useEffect(() => {
     async function loadRate() {
       const r = await fetchEthToInrRate();
@@ -58,7 +57,6 @@ export default function Donation() {
     loadRate();
   }, []);
 
-  // Prefill amount using target
   useEffect(() => {
     if (!selectedRequest) return;
     const suggested = Number(selectedRequest?.target?.amount || 0);
@@ -68,21 +66,18 @@ export default function Donation() {
     }
   }, [selectedRequest, ethRate]);
 
-  // When user types ETH -> update INR
   function handleEthChange(v) {
     setAmountEth(v);
     if (!v || isNaN(v)) return setAmountINR("");
     setAmountINR(String(Math.round(Number(v) * ethRate)));
   }
 
-  // When user types INR -> update ETH
   function handleInrChange(v) {
     setAmountINR(v);
     if (!v || isNaN(v)) return setAmountEth("");
     setAmountEth(String((Number(v) / ethRate).toFixed(6)));
   }
 
-  // Wait for selectedRequest
   async function waitForSelectedRequest(timeoutMs = 3000) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -98,7 +93,6 @@ export default function Donation() {
     return selectedRequestRef.current;
   }
 
-  // Resolve recipient
   async function resolveRecipient(request) {
     if (!request) return { toUserId: null, toWallet: null };
     const user = request.user;
@@ -109,7 +103,6 @@ export default function Donation() {
     };
   }
 
-  // DONATE HANDLER
   async function handleDonate(e) {
     e.preventDefault();
     setError(null);
@@ -148,8 +141,9 @@ export default function Donation() {
         toUserId,
         toWallet,
         amountEth,
-        currencySymbol: localReq?.target?.currencySymbol || CURRENCY_SYMBOL,
-        network: localReq?.target?.network || "sepolia",
+        currencySymbol: localReq?.target?.currencySymbol,
+        networkName: localReq?.target?.networkName,
+        expectedChainId: localReq?.target?.expectedChainId,
       });
 
       setSuccessTx(result.txHash);
@@ -175,6 +169,14 @@ export default function Donation() {
   }
 
   const req = selectedRequest;
+
+  // Helper for truncated address
+  const truncateAddress = (addr) =>
+    addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "Not connected";
+
+  // Helper to display chain info
+  const chainName = chain?.name || "Unknown Network";
+  const chainId = chain?.chainId || "N/A";
 
   return (
     <div className="min-h-screen bg-zinc-900 text-stone-100 p-4 sm:p-8">
@@ -216,19 +218,63 @@ export default function Donation() {
 
             <button
               onClick={handleDonate}
-              disabled={donating || resolving}
-              className="w-full py-3 bg-orange-400 text-zinc-900 font-semibold rounded-lg mt-2 hover:opacity-90"
+              disabled={donating || resolving || !connected}
+              className="w-full py-3 bg-orange-400 text-zinc-900 font-semibold rounded-lg mt-2 hover:opacity-90 disabled:opacity-50"
             >
-              {donating ? "Processing..." : `Donate ${amountEth} ETH`}
+              {donating
+                ? "Processing..."
+                : !connected
+                ? "Connect Wallet to Donate"
+                : `Donate ${amountEth} ${req.target?.currencySymbol || "ETH"}`}
             </button>
           </div>
         </div>
 
-        {/* Recipient Wallet */}
-        <p className="text-sm text-stone-400">
-          Recipient Wallet:{" "}
-          <span className="text-stone-200">{req.user?.walletId || "N/A"}</span>
-        </p>
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-stone-200">
+            Transaction Details
+          </h3>
+
+          {/* Donor Wallet Status */}
+          <div className="bg-zinc-800/30 border border-zinc-700 p-4 rounded-lg text-sm">
+            <h4 className="font-medium text-stone-300 mb-2">
+              Your Wallet Status (Sender)
+            </h4>
+            <p
+              className={`mb-1 ${
+                connected ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              Wallet: {connected ? truncateAddress(address) : "Disconnected"}
+            </p>
+            <p className="text-stone-400">
+              Current Network: {chainName} (Chain ID: {chainId})
+            </p>
+            <p className="text-stone-400">
+              Required Network: {req.target?.networkName} (Chain ID:{" "}
+              {req.target?.expectedChainId})
+            </p>
+          </div>
+
+          {/* Recipient Wallet */}
+          <div className="text-sm text-stone-400">
+            <h4 className="font-medium text-stone-300 mb-2">
+              Recipient Information
+            </h4>
+            <p>
+              Recipient Wallet:{" "}
+              <span className="text-stone-200 break-all">
+                {req.user?.walletId || "N/A"}
+              </span>
+            </p>
+            <p>
+              Donation Network:{" "}
+              <span className="text-stone-200">
+                {req.target?.networkName || "N/A"}
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

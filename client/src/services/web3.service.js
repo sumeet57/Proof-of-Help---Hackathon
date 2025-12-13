@@ -1,9 +1,4 @@
-// src/services/web3.service.js
 import { ethers } from "ethers";
-
-/**
- * Low level helpers for interacting with window.ethereum using ethers v6
- */
 
 const ETHERS_DEFAULT_OPTIONS = {}; // can add pollingInterval etc.
 
@@ -13,7 +8,6 @@ export function hasEthereum() {
 
 export function createProvider() {
   if (!hasEthereum()) return null;
-
   try {
     return new ethers.BrowserProvider(window.ethereum);
   } catch (err) {
@@ -24,7 +18,6 @@ export function createProvider() {
 
 export async function requestAccounts() {
   if (!hasEthereum()) throw new Error("No Ethereum provider found");
-  // ask user to connect
   const accounts = await window.ethereum.request({
     method: "eth_requestAccounts",
   });

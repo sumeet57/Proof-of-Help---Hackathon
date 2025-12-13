@@ -3,12 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 import { ethers } from "ethers";
 import { userApi } from "../interceptors/userApi.js";
 import { WalletContext } from "./WalletContext";
-import {
-  EXPECTED_CHAIN_ID,
-  CONFIRMATIONS_REQUIRED,
-  CURRENCY_SYMBOL,
-  NETWORK_NAME,
-} from "../utils/web3.utils.js";
+import { CONFIRMATIONS_REQUIRED } from "../utils/web3.utils.js";
 import { donationApi } from "../interceptors/donation.api.js";
 import { toast } from "react-toastify";
 
@@ -25,8 +20,6 @@ export const DonationContextProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // create fresh provider & signer from injected wallet each time to avoid stale signers
 
   async function createFreshProviderAndSigner() {
     if (typeof window === "undefined" || !window.ethereum)
@@ -50,7 +43,6 @@ export const DonationContextProvider = ({ children }) => {
   async function donate(opts = {}) {
     setError(null);
     setLoading(true);
-    const debug = (...a) => console.log("[donate]", ...a);
 
     try {
       const ok = await ensureConnected();
@@ -61,12 +53,22 @@ export const DonationContextProvider = ({ children }) => {
         toUserId,
         toWallet,
         amountEth,
-        currencySymbol = CURRENCY_SYMBOL,
-        network = NETWORK_NAME,
+        currencySymbol,
+        networkName,
+        expectedChainId,
       } = opts;
 
-      if (!requestId || !toUserId || !toWallet)
-        throw new Error("Missing donation target information");
+      if (
+        !requestId ||
+        !toUserId ||
+        !toWallet ||
+        !expectedChainId ||
+        !networkName ||
+        !currencySymbol
+      )
+        throw new Error(
+          "Missing donation target information, including required network details."
+        );
       if (!amountEth || Number(amountEth) <= 0)
         throw new Error("Invalid donation amount");
 
@@ -74,30 +76,24 @@ export const DonationContextProvider = ({ children }) => {
       if (!provider || !signer)
         throw new Error("Wallet provider/signer not available");
 
-      // ensure network
       const net = await provider.getNetwork();
-      if (Number(net.chainId) !== Number(EXPECTED_CHAIN_ID)) {
+
+      if (Number(net.chainId) !== Number(expectedChainId)) {
         try {
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [
-              { chainId: "0x" + Number(EXPECTED_CHAIN_ID).toString(16) },
-            ],
+            params: [{ chainId: "0x" + Number(expectedChainId).toString(16) }],
           });
           await new Promise((r) => setTimeout(r, 400));
         } catch (e) {
-          throw new Error(`Please switch wallet to ${NETWORK_NAME}`);
+          throw new Error(`Please switch wallet to ${networkName}`);
         }
       }
 
       const from = await signer.getAddress();
-      debug("from", from);
-
       const valueWei = ethers.parseEther(String(amountEth));
       const balance = await provider.getBalance(from);
-      debug("balance", ethers.formatEther(balance));
 
-      // estimate cost
       let gasEstimate;
       try {
         gasEstimate = await provider.estimateGas({
@@ -106,7 +102,6 @@ export const DonationContextProvider = ({ children }) => {
           value: valueWei,
         });
       } catch (e) {
-        debug("estimateGas failed, using 21000", e);
         gasEstimate = ethers.BigInt(21000);
       }
       const feeData = await provider.getFeeData();
@@ -124,35 +119,24 @@ export const DonationContextProvider = ({ children }) => {
         );
       }
 
-      // send tx
-      debug("sending tx to", toWallet, "amount", amountEth);
       const txResponse = await signer.sendTransaction({
         to: toWallet,
         value: valueWei,
       });
-      debug("txResponse (immediate):", txResponse);
       const immediateHash =
         txResponse.hash || txResponse.transactionHash || null;
 
-      // show pending hash in console/UI
-      debug("pending tx hash:", immediateHash);
-
-      // wait for receipt
       const receipt = await txResponse.wait(Number(CONFIRMATIONS_REQUIRED));
-      debug("receipt:", receipt);
 
-      // choose txHash: prefer receipt.transactionHash, fallback to txResponse.hash
       const txHash = receipt?.transactionHash || immediateHash;
       if (!txHash)
         throw new Error("txHash missing after transaction confirmation");
 
-      // ensure success status
       const status = receipt.status;
       if (!(status === 1 || String(status) === "0x1")) {
         throw new Error("Transaction reverted on-chain");
       }
 
-      // prepare payload
       const body = {
         requestId,
         toUserId,
@@ -160,26 +144,16 @@ export const DonationContextProvider = ({ children }) => {
         toWallet: toWallet.toLowerCase(),
         amountValue: Number(amountEth),
         currencySymbol,
-        network,
+        network: networkName,
         txHash,
         blockNumber: receipt.blockNumber,
         txTimestamp: new Date().toISOString(),
       };
 
-      // debug - log payload before POST
-      debug("POST /donations body:", JSON.stringify(body, null, 2));
-
-      // post to server
       let serverRes;
       try {
         serverRes = await donationApi.post("/", body);
-        debug("server response:", serverRes?.status, serverRes?.data);
       } catch (serverErr) {
-        debug(
-          "server POST failed:",
-          serverErr?.response?.data || serverErr?.message || serverErr
-        );
-        // bubble up server response if available
         const msg =
           serverErr?.response?.data?.error ||
           serverErr?.message ||
@@ -190,7 +164,6 @@ export const DonationContextProvider = ({ children }) => {
       setLoading(false);
       return { success: true, txHash };
     } catch (err) {
-      debug("donate error final:", err);
       const msg =
         err?.response?.data?.error || err?.message || "Donation failed";
       setError(msg);
@@ -199,13 +172,11 @@ export const DonationContextProvider = ({ children }) => {
     }
   }
 
-  // fetch donations for a request
   async function fetchDonationsForRequest(requestId) {
     try {
       const res = await userApi.get(`/donations/request/${requestId}`);
       return res.data.items || [];
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.warn("fetchDonationsForRequest failed", err);
       return [];
     }
@@ -214,7 +185,6 @@ export const DonationContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await donationApi.get("/my");
-      console.log("fetchDonationsByUser", res.data.items);
       setMyDonations(res.data.items || []);
     } catch (err) {
       console.warn("fetchDonationsByUser failed", err);
