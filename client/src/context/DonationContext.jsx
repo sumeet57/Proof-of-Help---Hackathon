@@ -17,6 +17,7 @@ export const DonationContext = createContext({
 export const DonationContextProvider = ({ children }) => {
   const { connected, connectWallet } = useContext(WalletContext);
   const [myDonations, setMyDonations] = useState([]);
+  const [requestDonations, setRequestDonations] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -77,7 +78,6 @@ export const DonationContextProvider = ({ children }) => {
         throw new Error("Wallet provider/signer not available");
 
       const net = await provider.getNetwork();
-
       if (Number(net.chainId) !== Number(expectedChainId)) {
         try {
           await window.ethereum.request({
@@ -137,17 +137,23 @@ export const DonationContextProvider = ({ children }) => {
         throw new Error("Transaction reverted on-chain");
       }
 
+      // UPDATED BODY: Restructured to match the nested Donation Mongoose Schema
       const body = {
-        requestId,
-        toUserId,
+        request: requestId, // Mongoose field name 'request'
+        toUser: toUserId, // Mongoose field name 'toUser'
         fromWallet: from.toLowerCase(),
         toWallet: toWallet.toLowerCase(),
-        amountValue: Number(amountEth),
-        currencySymbol,
-        network: networkName,
+        amount: {
+          // NEW: Nested object matching AmountSchema
+          value: Number(amountEth),
+          currencySymbol: currencySymbol,
+          networkName: networkName,
+          expectedChainId: expectedChainId,
+        },
         txHash,
         blockNumber: receipt.blockNumber,
         txTimestamp: new Date().toISOString(),
+        // Note: fromUser (donor ID) is expected to be injected by server middleware
       };
 
       let serverRes;
@@ -174,7 +180,8 @@ export const DonationContextProvider = ({ children }) => {
 
   async function fetchDonationsForRequest(requestId) {
     try {
-      const res = await userApi.get(`/donations/request/${requestId}`);
+      const res = await donationApi.get(`/request/${requestId}`);
+      setRequestDonations(res.data.items || []);
       return res.data.items || [];
     } catch (err) {
       console.warn("fetchDonationsForRequest failed", err);
@@ -216,6 +223,7 @@ export const DonationContextProvider = ({ children }) => {
     fetchDonationsByUser,
     myDonations,
     validateBeforeDonation,
+    requestDonations,
   };
 
   return (

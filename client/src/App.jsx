@@ -22,6 +22,7 @@ import Details from "./pages/request/Details";
 import Donation from "./pages/Donation";
 import Service from "./pages/Service";
 import Header from "./components/Header";
+import Donations from "./pages/request/Donations";
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
                     {/* Request Details + Donate Nested Route */}
                     <Route path="/:requestId" element={<Details />}>
                       <Route path="donate" element={<Donation />} />
+                      <Route path="donations" element={<Donations />} />
                     </Route>
 
                     {/* Services Page (Header + Content) */}

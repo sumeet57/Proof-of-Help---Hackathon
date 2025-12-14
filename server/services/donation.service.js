@@ -12,7 +12,8 @@ export async function createDonationRecord(payload) {
     toWallet,
     amountValue,
     currencySymbol,
-    network,
+    networkName,
+    expectedChainId,
     txHash,
     blockNumber,
     txTimestamp,
@@ -46,8 +47,9 @@ export async function createDonationRecord(payload) {
     toWallet,
     amount: {
       value: amountValue,
-      currencySymbol: currencySymbol || "ETH",
-      network: network || "sepolia",
+      currencySymbol,
+      networkName,
+      expectedChainId, // New field saved here
     },
     txHash,
     blockNumber,
@@ -128,28 +130,3 @@ export async function listDonationsForUser(userId, options = {}) {
 export const listMyDonations = async (userId, options = {}) => {
   return listDonationsForUser(userId, options);
 };
-
-export async function validateBeforeDonation() {
-  try {
-    const { requestId } = req.params;
-    const request = await Request.findById(requestId);
-    if (!request) {
-      const err = new Error("Request not found");
-      err.code = "REQUEST_NOT_FOUND";
-      throw err;
-    }
-    if (request.status !== "open") {
-      const err = new Error("Request is not open for donations");
-      err.code = "REQUEST_NOT_OPEN";
-      throw err;
-    }
-    if (
-      request?.target?.amount &&
-      request.totals?.totalReceived >= request.target.amount
-    ) {
-      const err = new Error("Request has already reached its target amount");
-      err.code = "TARGET_AMOUNT_REACHED";
-      throw err;
-    }
-  } catch (error) {}
-}

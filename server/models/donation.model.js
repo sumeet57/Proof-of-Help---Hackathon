@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const { Schema } = mongoose;
 
 const AmountSchema = new Schema(
@@ -11,10 +10,16 @@ const AmountSchema = new Schema(
     currencySymbol: {
       type: String,
       default: "ETH",
+      required: true,
     },
-    network: {
+    // Updated fields to store the verified network details
+    networkName: {
       type: String,
-      default: "sepolia",
+      required: true,
+    },
+    expectedChainId: {
+      type: Number,
+      required: true,
     },
   },
   { _id: false }
@@ -26,6 +31,7 @@ const DonationSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Request",
       required: true,
+      index: true,
     },
     fromUser: {
       type: mongoose.Schema.Types.ObjectId,
@@ -70,7 +76,6 @@ const DonationSchema = new Schema(
     },
     blockNumber: Number,
     txTimestamp: Date,
-
     meta: {
       userAgent: String,
       clientIp: String,

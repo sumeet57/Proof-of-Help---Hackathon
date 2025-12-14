@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createDonationController,
+  listDonationsForRequestController,
   listMyDonationsController,
   validateBeforeDonation,
 } from "../controllers/donation.controller.js";
@@ -22,6 +23,11 @@ donationRouter.get(
 
   authenticate,
   listMyDonationsController
+);
+donationRouter.get(
+  "/request/:requestId",
+  authenticate,
+  listDonationsForRequestController
 );
 donationRouter.post(
   `/validate/:requestId`,

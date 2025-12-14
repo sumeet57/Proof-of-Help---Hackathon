@@ -70,7 +70,10 @@ export default function Details() {
   }
 
   // if user navigated to the donate sub-route, render children (Outlet)
-  if (window.location.pathname === `/${requestId}/donate`) {
+  if (
+    window.location.pathname === `/${requestId}/donate` ||
+    window.location.pathname === `/${requestId}/donations`
+  ) {
     return <Outlet />;
   }
 
@@ -193,6 +196,12 @@ export default function Details() {
                               }`
                             : "No goal"}
                         </div>
+                        <button
+                          onClick={() => navigate(`/${req._id}/donations`)}
+                          className="ml-auto text-xs text-orange-400 hover:underline"
+                        >
+                          View all donations →
+                        </button>
                       </div>
                     </div>
                   </div>
