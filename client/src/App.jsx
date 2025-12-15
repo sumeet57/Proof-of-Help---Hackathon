@@ -23,6 +23,7 @@ import Donation from "./pages/Donation";
 import Service from "./pages/Service";
 import Header from "./components/Header";
 import Donations from "./pages/request/Donations";
+import PublicProfile from "./pages/PublicProfile";
 
 export default function App() {
   return (
@@ -66,6 +67,11 @@ export default function App() {
 
                     {/* Logout */}
                     <Route path="/logout" element={<Logout />} />
+
+                    <Route
+                      path="/profile/:userId"
+                      element={<PublicProfile />}
+                    />
                   </Routes>
                 </LayoutContextProvider>
               </DonationContextProvider>

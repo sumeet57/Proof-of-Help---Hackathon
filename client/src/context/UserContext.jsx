@@ -14,13 +14,13 @@ export const UserContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [publicProfile, setPublicProfile] = useState(null);
 
   const getUser = async () => {
     try {
       setLoading(true);
       const response = await userApi.get("/");
       if (response) {
-        console.log("Fetched user data:", response.data);
         setUser(response.data);
       }
     } catch (error) {
@@ -109,6 +109,19 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
+  const getPublicProfile = async (userId) => {
+    try {
+      setLoading(true);
+      const response = await userApi.get(`/${userId}`);
+      setPublicProfile(response.data || null);
+    } catch (error) {
+      toast.error(error);
+      return Promise.reject(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     getUser();
   }, []);
@@ -124,6 +137,8 @@ export const UserContextProvider = ({ children }) => {
         getUser,
         update,
         logout,
+        publicProfile,
+        getPublicProfile,
       }}
     >
       {children}

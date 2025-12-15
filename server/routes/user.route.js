@@ -3,6 +3,7 @@ import {
   getUserProfile,
   loginUser,
   logoutUser,
+  publicProfileController,
   registerUser,
   setWalletController,
   updateUserProfile,
@@ -26,5 +27,6 @@ userRouter.post(
   setWalletController
 );
 userRouter.put("/", authenticate, updateUserProfile);
+userRouter.get("/:userId", authenticate, publicProfileController);
 
 export default userRouter;
