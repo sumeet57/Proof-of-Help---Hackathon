@@ -9,7 +9,7 @@ const Logout = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/"); // or your desired redirect path
+      navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }

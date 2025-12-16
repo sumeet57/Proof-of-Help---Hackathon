@@ -1,5 +1,4 @@
 import Request from "../models/request.model.js";
-import User from "../models/user.model.js";
 import { consumeRequestCreditOrThrow } from "./user.service.js";
 
 export async function createRequestForUser(userId, payload) {
@@ -85,7 +84,6 @@ export async function updateRequestStatus(requestId, userId, newStatus) {
     err.code = "NOT_FOUND";
     throw err;
   }
-  console.log("Comparing:", request.user.toString(), userId.toString());
   if (request.user.toString() != userId.toString()) {
     const err = new Error("Not authorized to update this request");
     err.code = "FORBIDDEN";

@@ -27,18 +27,13 @@ export const userApi = axios.create({
 //   return cfg;
 // });
 
-// Response handler (propagate useful error shape)
 userApi.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If server responded
     if (error.response) {
-      // If 401 explicitly redirect to auth (you can also emit an event instead)
       if (error.response.status === 401) {
         const path = window.location.pathname;
-
-        // pages where we don't want to force-redirect
-        const allowedPaths = ["/auth", "/logout"];
+        const allowedPaths = ["/auth", "/logout", "/"];
 
         if (!allowedPaths.includes(path)) {
           window.location.href = "/auth";
@@ -49,15 +44,13 @@ userApi.interceptors.response.use(
           error: error.response.data?.error || "Unauthorized",
         });
       }
-
-      // propagate server error body (consistent)
       return Promise.reject({
         status: error.response.status,
         error:
           error.response.data?.error || error.response.data || error.message,
       });
     }
-    // network / other error
+
     return Promise.reject({
       status: 0,
       error: error.message || "Network error",

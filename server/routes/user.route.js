@@ -20,12 +20,7 @@ userRouter.get("/", authenticate, getUserProfile);
 userRouter.post("/login", validateLogin, loginUser);
 userRouter.post("/register", validateRegister, registerUser);
 userRouter.post("/logout", authenticate, logoutUser);
-userRouter.post(
-  "/wallet",
-
-  authenticate,
-  setWalletController
-);
+userRouter.post("/wallet", authenticate, setWalletController);
 userRouter.put("/", authenticate, updateUserProfile);
 userRouter.get("/:userId", authenticate, publicProfileController);
 

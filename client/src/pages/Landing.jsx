@@ -1,4 +1,3 @@
-// src/pages/Landing.jsx
 import React, { useState, useEffect } from "react";
 import {
   Github,

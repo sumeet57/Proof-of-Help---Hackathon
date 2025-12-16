@@ -1,7 +1,5 @@
 import { ethers } from "ethers";
 
-const ETHERS_DEFAULT_OPTIONS = {}; // can add pollingInterval etc.
-
 export function hasEthereum() {
   return typeof window !== "undefined" && !!window.ethereum;
 }
@@ -34,7 +32,7 @@ export async function getNetwork(provider) {
   if (!provider) provider = createProvider();
   if (!provider) return null;
   const network = await provider.getNetwork();
-  // network.chainId (number), network.name, network.ensAddress (maybe)
+  // network.chainId (number), network.name, network.ensAddress
   return network;
 }
 
@@ -43,7 +41,6 @@ export async function getBalance(providerOrSigner, address) {
     if (!providerOrSigner) providerOrSigner = createProvider();
     if (!address) return 0;
     const balanceBig = await providerOrSigner.getBalance(address);
-    // return as string in ETH (not wei)
     return ethers.formatEther(balanceBig);
   } catch (e) {
     console.error("getBalance error", e);
@@ -52,7 +49,6 @@ export async function getBalance(providerOrSigner, address) {
 }
 
 export async function switchNetwork(chainIdHex) {
-  // chainIdHex e.g. "0xaa36a7" for Sepolia (11155111 -> 0xaa36a7)
   if (!hasEthereum()) throw new Error("No wallet provider");
   try {
     await window.ethereum.request({
@@ -61,7 +57,6 @@ export async function switchNetwork(chainIdHex) {
     });
     return true;
   } catch (switchError) {
-    // 4001 user rejected, 4902 chain not added
     throw switchError;
   }
 }

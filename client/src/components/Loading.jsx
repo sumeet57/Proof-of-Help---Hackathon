@@ -1,4 +1,3 @@
-// src/components/Loading.jsx
 import React from "react";
 
 export default function Loading({ fullScreen = false }) {
@@ -13,16 +12,14 @@ export default function Loading({ fullScreen = false }) {
       role="status"
     >
       <div className="relative w-16 h-16">
-        {/* translucent blue backdrop circle */}
         <div className="absolute inset-0 rounded-full bg-blue-500/20" />
-        {/* half-ring spinner */}
+
         <svg
           className="animate-spin w-16 h-16"
           viewBox="0 0 50 50"
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          {/* background circle */}
           <circle
             cx="25"
             cy="25"
@@ -31,10 +28,10 @@ export default function Loading({ fullScreen = false }) {
             strokeWidth="6"
             fill="none"
           />
-          {/* half ring */}
+
           <path
             d="M45 25a20 20 0 0 0-20-20"
-            stroke="#3B82F6" /* blue-500 */
+            stroke="#3B82F6"
             strokeWidth="6"
             strokeLinecap="round"
             fill="none"

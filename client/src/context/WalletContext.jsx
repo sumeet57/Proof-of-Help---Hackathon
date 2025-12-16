@@ -1,4 +1,3 @@
-// src/context/WalletContext.jsx
 import React, { createContext, useEffect, useMemo, useState } from "react";
 import {
   hasEthereum,

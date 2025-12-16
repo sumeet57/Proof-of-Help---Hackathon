@@ -2,7 +2,7 @@ import Joi from "joi";
 
 const amountSchema = Joi.object({
   value: Joi.number()
-    .min(0.000000000000000001) // Smallest possible unit in crypto
+    .min(0.000000000000000001) // minimum value in blockchain transactions
     .required()
     .messages({
       "number.base": "Donation amount must be a number",
@@ -54,7 +54,7 @@ export const createDonationSchema = Joi.object({
     "string.empty": "Transaction hash is required",
     "any.required": "Transaction hash is required",
   }),
-  blockNumber: Joi.number().optional(), // Marking blockNumber/txTimestamp as optional since they might be missing in a pure validation step
+  blockNumber: Joi.number().optional(),
   txTimestamp: Joi.date().iso().optional(),
   meta: Joi.object({
     userAgent: Joi.string().optional(),

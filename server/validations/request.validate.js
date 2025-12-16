@@ -9,12 +9,10 @@ const targetSchema = Joi.object({
   currencySymbol: Joi.string().trim().uppercase().default("ETH").messages({
     "string.base": "Currency symbol must be a string",
   }),
-  // Renamed to match the model and frontend payload
   networkName: Joi.string().trim().required().messages({
     "string.base": "Network name must be a string",
     "any.required": "Network name is required",
   }),
-  // New field: Required to ensure the Chain ID is correctly set for donation enforcement
   expectedChainId: Joi.number().integer().min(1).required().messages({
     "number.base": "Chain ID must be a number",
     "number.min": "Chain ID must be a positive integer",
@@ -22,7 +20,6 @@ const targetSchema = Joi.object({
   }),
 });
 
-// Joi schema for creating a new donation request
 export const createRequestSchema = Joi.object({
   title: Joi.string().trim().required().max(150).messages({
     "string.base": "Title must be a string",
@@ -49,7 +46,6 @@ export const createRequestSchema = Joi.object({
   }),
 });
 
-// Joi schema for updating an existing donation request
 export const updateRequestSchema = Joi.object({
   title: Joi.string().trim().max(150).messages({
     "string.base": "Title must be a string",

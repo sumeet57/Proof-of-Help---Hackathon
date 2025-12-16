@@ -26,7 +26,6 @@ const Aside = () => {
 
   return (
     <>
-      {/* Desktop Aside */}
       <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 bg-zinc-950 text-stone-100 shadow-xl p-4 gap-6 z-40">
         <div className="flex items-center gap-3">
           <div>
@@ -66,7 +65,6 @@ const Aside = () => {
         </div>
       </aside>
 
-      {/* Mobile Bottom Nav */}
       <aside className="lg:hidden fixed left-0 right-0 bottom-0 bg-zinc-900/95 text-stone-100 z-50 border-t border-zinc-800">
         <nav className="flex items-center justify-between py-2 px-3">
           {navItems.map(({ key, label, Icon }) => (

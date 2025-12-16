@@ -1,4 +1,3 @@
-// src/context/DonationContext.jsx
 import React, { createContext, useContext, useState } from "react";
 import { ethers } from "ethers";
 import { userApi } from "../interceptors/userApi.js";
@@ -137,14 +136,12 @@ export const DonationContextProvider = ({ children }) => {
         throw new Error("Transaction reverted on-chain");
       }
 
-      // UPDATED BODY: Restructured to match the nested Donation Mongoose Schema
       const body = {
-        request: requestId, // Mongoose field name 'request'
-        toUser: toUserId, // Mongoose field name 'toUser'
+        request: requestId,
+        toUser: toUserId,
         fromWallet: from.toLowerCase(),
         toWallet: toWallet.toLowerCase(),
         amount: {
-          // NEW: Nested object matching AmountSchema
           value: Number(amountEth),
           currencySymbol: currencySymbol,
           networkName: networkName,
@@ -153,7 +150,6 @@ export const DonationContextProvider = ({ children }) => {
         txHash,
         blockNumber: receipt.blockNumber,
         txTimestamp: new Date().toISOString(),
-        // Note: fromUser (donor ID) is expected to be injected by server middleware
       };
 
       let serverRes;

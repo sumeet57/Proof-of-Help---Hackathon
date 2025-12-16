@@ -1,6 +1,5 @@
 import User from "../models/user.model.js";
 import { comparePassword, hashPassword } from "../utils/auth/password.utils.js";
-
 import { generateSessionId } from "../utils/auth/session.utils.js";
 
 const MAX_SESSIONS = 5;

@@ -15,7 +15,7 @@ export async function createDonationController(req, res) {
       toUser: toUserId,
       fromWallet,
       toWallet,
-      amount = {}, // ⬅️ FIX: Provide default empty object for safe destructuring
+      amount = {},
       txHash,
       blockNumber,
       txTimestamp,
@@ -53,23 +53,18 @@ export async function createDonationController(req, res) {
 
     return res.status(201).json({ donation });
   } catch (err) {
-    // ... rest of the error handling remains the same
     console.error(err);
     if (err.code === "REQUEST_NOT_FOUND") {
       return res.status(404).json({ error: err.message });
     }
-    // ... (omitted for brevity)
+
     if (err.code === 11000 || err.code === "11000") {
-      // duplicate txHash
       return res.status(409).json({ error: "Donation already recorded" });
     }
     return res.status(500).json({ error: "Server error" });
   }
 }
-/**
- * GET /api/donations
- * query: page, limit, requestId, fromUserId, toUserId, fromWallet, toWallet
- */
+
 export async function listDonationsController(req, res) {
   try {
     const {
@@ -106,9 +101,6 @@ export async function listDonationsController(req, res) {
   }
 }
 
-/**
- * GET /api/donations/:id
- */
 export async function getDonationController(req, res) {
   try {
     const { id } = req.params;
@@ -123,10 +115,6 @@ export async function getDonationController(req, res) {
   }
 }
 
-/**
- * GET /api/requests/:id/donations
- * list donations for a given request
- */
 export async function listDonationsForRequestController(req, res) {
   try {
     const { id: requestId } = req.params;

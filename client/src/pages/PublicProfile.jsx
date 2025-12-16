@@ -31,7 +31,6 @@ const PublicProfile = () => {
   return (
     <div className="min-h-screen bg-zinc-900 text-stone-100 px-4 py-6 sm:px-6">
       <div className="max-w-lg mx-auto">
-        {/* Back */}
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm bg-red-500 rounded-lg px-3 py-1.5 text-stone-100 hover:text-orange-400 mb-4"
@@ -39,9 +38,7 @@ const PublicProfile = () => {
           <FiArrowLeft /> Back
         </button>
 
-        {/* Card */}
         <div className="bg-zinc-800/40 border border-zinc-700 rounded-2xl p-6 space-y-6">
-          {/* Avatar + Name */}
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-xl bg-orange-400/20 flex items-center justify-center text-orange-400 text-xl font-bold">
               {fullName?.firstName?.charAt(0)?.toUpperCase() || "U"}
@@ -55,9 +52,7 @@ const PublicProfile = () => {
             </div>
           </div>
 
-          {/* Info */}
           <div className="space-y-4 text-sm">
-            {/* Email */}
             <div className="flex items-start gap-3">
               <FiMail className="mt-1 text-stone-400" />
               <div>
@@ -66,7 +61,6 @@ const PublicProfile = () => {
               </div>
             </div>
 
-            {/* Wallet */}
             <div className="flex items-start gap-3">
               <FiPocket className="mt-1 text-stone-400" />
               <div>
@@ -78,7 +72,6 @@ const PublicProfile = () => {
             </div>
           </div>
 
-          {/* CTA */}
           {walletId && (
             <a
               href={`https://etherscan.io/address/${walletId}`}

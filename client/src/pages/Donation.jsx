@@ -1,4 +1,3 @@
-// src/pages/Donation.jsx
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RequestContext } from "../context/RequestContext";
@@ -24,10 +23,8 @@ export default function Donation() {
     validateBeforeDonation,
   } = useContext(DonationContext);
 
-  // --- START OF CHANGE: Consuming Wallet Context Details ---
   const { connected, connectWallet, address, chain } =
     useContext(WalletContext);
-  // --- END OF CHANGE ---
 
   const { setSideBarSelected } = useContext(LayoutContext);
 
@@ -170,25 +167,20 @@ export default function Donation() {
 
   const req = selectedRequest;
 
-  // Helper for truncated address
   const truncateAddress = (addr) =>
     addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "Not connected";
 
-  // Helper to display chain info
   const chainName = chain?.name || "Unknown Network";
   const chainId = chain?.chainId || "N/A";
 
   return (
     <div className="min-h-screen bg-zinc-900 text-stone-100 p-4 sm:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
-        {/* Request Info */}
         <div className="bg-zinc-800/30 border border-zinc-700 p-6 rounded-2xl">
           <h2 className="text-xl font-semibold">{req.title}</h2>
           <p className="text-sm text-stone-400 mt-1">{req.description}</p>
 
-          {/* Amount Section */}
           <div className="mt-6 space-y-4">
-            {/* ETH INPUT */}
             <div>
               <label className="text-sm mb-2 block">Amount (ETH)</label>
               <input
@@ -199,7 +191,6 @@ export default function Donation() {
               />
             </div>
 
-            {/* INR INPUT */}
             <div>
               <label className="text-sm mb-2 block">Amount (INR)</label>
               <input
@@ -235,7 +226,6 @@ export default function Donation() {
             Transaction Details
           </h3>
 
-          {/* Donor Wallet Status */}
           <div className="bg-zinc-800/30 border border-zinc-700 p-4 rounded-lg text-sm">
             <h4 className="font-medium text-stone-300 mb-2">
               Your Wallet Status (Sender)
@@ -256,7 +246,6 @@ export default function Donation() {
             </p>
           </div>
 
-          {/* Recipient Wallet */}
           <div className="text-sm text-stone-400">
             <h4 className="font-medium text-stone-300 mb-2">
               Recipient Information

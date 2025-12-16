@@ -35,11 +35,7 @@ export default function Details() {
   }
 
   if (loading && !selectedRequest) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-900">
-        <Loading fullScreen={false} />
-      </div>
-    );
+    return <Loading fullScreen={true} />;
   }
 
   if (error || !selectedRequest) {
@@ -63,9 +59,7 @@ export default function Details() {
   return (
     <div className="min-h-screen bg-zinc-900 text-stone-100 px-4 py-6 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* MAIN */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Header */}
           <div className="bg-zinc-800/40 border border-zinc-700 rounded-2xl p-5">
             <div className="flex gap-4">
               <div className="w-12 h-12 rounded-xl bg-orange-400/20 flex items-center justify-center text-orange-400 text-xl font-bold">
@@ -111,7 +105,6 @@ export default function Details() {
             </p>
           </div>
 
-          {/* Progress */}
           <div className="bg-zinc-800/40 border border-zinc-700 rounded-2xl p-5 space-y-3">
             <div className="w-full bg-zinc-700 h-3 rounded-full overflow-hidden">
               <div
@@ -144,7 +137,6 @@ export default function Details() {
           </div>
         </div>
 
-        {/* SIDEBAR */}
         <aside className="space-y-4 lg:sticky lg:top-24">
           <div className="bg-zinc-800/40 border border-zinc-700 rounded-2xl p-5 space-y-4">
             <div>
@@ -204,7 +196,6 @@ export default function Details() {
         </aside>
       </div>
 
-      {/* Mobile Donate Button */}
       <div className="fixed bottom-6 left-0 right-0 flex justify-center lg:hidden">
         <button
           onClick={() => navigate(`/${req._id}/donate`)}

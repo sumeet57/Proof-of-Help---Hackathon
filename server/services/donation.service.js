@@ -1,6 +1,5 @@
 import Donation from "../models/donation.model.js";
 import Request from "../models/request.model.js";
-import User from "../models/user.model.js";
 import { updateRequestTotalsAfterDonation } from "./request.service.js";
 
 export async function createDonationRecord(payload) {
@@ -49,7 +48,7 @@ export async function createDonationRecord(payload) {
       value: amountValue,
       currencySymbol,
       networkName,
-      expectedChainId, // New field saved here
+      expectedChainId,
     },
     txHash,
     blockNumber,
@@ -62,7 +61,6 @@ export async function createDonationRecord(payload) {
   return donation;
 }
 
-// get donation by id
 export async function getDonationById(donationId) {
   return Donation.findById(donationId)
     .populate("fromUser", "fullName email walletId")

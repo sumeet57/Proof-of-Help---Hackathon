@@ -37,7 +37,6 @@ export default function RequestCard({ request, onDonate = () => {} }) {
 
   return (
     <article className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-3 mb-3 shadow-sm hover:bg-zinc-800/70 transition">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 flex items-center justify-center rounded-md bg-orange-400/20 text-orange-400 text-lg font-semibold">
           {ownerName.charAt(0).toUpperCase()}
@@ -52,23 +51,16 @@ export default function RequestCard({ request, onDonate = () => {} }) {
           </p>
         </div>
       </div>
-
-      {/* Description */}
       <p className="mt-2 text-sm text-stone-300 line-clamp-2">
         {description?.substring(0, 90)}...
       </p>
-
-      {/* PROGRESS BAR */}
       <div className="mt-3 w-full bg-zinc-700 h-1.5 rounded-full overflow-hidden">
         <div
           className="h-1.5 bg-orange-400 rounded-full"
           style={{ width: `${progress}%` }}
         />
       </div>
-
-      {/* NEW — COMPACT METRICS + DONATE BUTTON IN 1 ROW */}
       <div className="mt-2 flex items-center justify-between">
-        {/* Left side: ETH + INR compact */}
         <div className="flex flex-col text-xs leading-tight">
           <span className="text-stone-200 font-medium">
             {received} {target.currencySymbol || "ETH"}
@@ -82,7 +74,6 @@ export default function RequestCard({ request, onDonate = () => {} }) {
           </span>
         </div>
 
-        {/* Right side: Donate button (Large and crisp) */}
         <button
           onClick={() => onDonate(request)}
           className="px-4 py-2 bg-orange-400 text-zinc-900 text-sm font-semibold rounded-md hover:opacity-90 whitespace-nowrap ml-3"

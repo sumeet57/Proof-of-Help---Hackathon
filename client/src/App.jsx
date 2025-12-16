@@ -33,28 +33,23 @@ export default function App() {
       <BrowserRouter>
         <ScrollToTop />
 
-        {/* All global contexts wrapped ONCE */}
         <UserContextProvider>
           <WalletContextProvider>
             <RequestContextProvider>
               <DonationContextProvider>
                 <LayoutContextProvider>
                   <Routes>
-                    {/* Public Routes */}
                     <Route path="/" element={<Landing />} />
                     <Route path="/auth" element={<Auth />} />
 
-                    {/* Protected App Routes (Inside MainLayout) */}
                     <Route path="/home" element={<MainLayout />} />
                     <Route path="/create" element={<Create />} />
 
-                    {/* Request Details + Donate Nested Route */}
                     <Route path="/:requestId" element={<Details />}>
                       <Route path="donate" element={<Donation />} />
                       <Route path="donations" element={<Donations />} />
                     </Route>
 
-                    {/* Services Page (Header + Content) */}
                     <Route
                       path="/service"
                       element={
@@ -65,7 +60,6 @@ export default function App() {
                       }
                     />
 
-                    {/* Logout */}
                     <Route path="/logout" element={<Logout />} />
 
                     <Route

@@ -4,7 +4,6 @@ export const hashPassword = async (password) => {
   try {
     const saltRounds = process.env.SALT_ROUNDS;
     const salt = await bcrypt.genSalt(parseInt(saltRounds, 10));
-
     const hashedPassword = await bcrypt.hash(password, salt);
     return hashedPassword;
   } catch (error) {

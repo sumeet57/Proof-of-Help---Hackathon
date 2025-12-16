@@ -1,4 +1,3 @@
-// src/utils/formatters.js
 export function ellipsifyAddress(addr = "", start = 6, end = 4) {
   if (!addr) return "";
   const a = String(addr);

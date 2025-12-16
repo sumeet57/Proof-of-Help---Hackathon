@@ -12,7 +12,6 @@ export function generateSessionId() {
   return { raw: id, hashed: hashedId };
 }
 
-// Hash session with secret
 export function hashSessionId(rawSessionId) {
   return crypto
     .createHmac("sha256", SESSION_SECRET)

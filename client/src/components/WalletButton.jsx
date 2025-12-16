@@ -1,4 +1,3 @@
-// src/components/WalletButton.jsx
 import React from "react";
 import useWallet from "../hooks/useWallet";
 import { ellipsifyAddress } from "../utils/formatters";
@@ -26,11 +25,6 @@ export default function WalletButton({ small = false }) {
   const onDisconnect = async () => {
     await disconnectWallet();
   };
-
-  // show preferred chain name; chain may be null
-  const chainLabel = chain
-    ? `${chain.name} (${chain.chainId})`
-    : "Unknown network";
 
   if (loading)
     return (

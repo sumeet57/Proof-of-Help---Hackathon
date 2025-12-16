@@ -4,9 +4,15 @@ import { normalizeWalletAddress } from "../utils/wallet.utils.js";
 export async function findUserByEmailWithPassword(email) {
   return User.findOne({ email }).select("+password");
 }
+export async function findUserByEmail(email) {
+  return User.findOne({ email });
+}
 
 export async function findUserById(userId) {
   return User.findById(userId);
+}
+export async function findUserByIdWithPassword(userId) {
+  return User.findById(userId).select("+password");
 }
 
 export async function getUserWalletId(userId) {
@@ -17,7 +23,6 @@ export async function getUserWalletId(userId) {
 export async function updateWalletId(userId, walletId) {
   const normalized = walletId ? normalizeWalletAddress(walletId) : null;
 
-  // basic validation: require 0x... length 42 for EVM addresses if not null
   if (normalized && !/^0x[0-9a-f]{40}$/.test(normalized)) {
     const err = new Error("Invalid wallet address");
     err.code = "INVALID_WALLET";

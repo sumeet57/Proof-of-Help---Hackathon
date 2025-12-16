@@ -14,9 +14,7 @@ export default function Service() {
           </p>
         </div>
 
-        {/* Plan Cards Grid */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Request Points Card */}
           <div className="group relative bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-orange-500/20 hover:border-orange-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -47,7 +45,6 @@ export default function Service() {
             </div>
           </div>
 
-          {/* Boast Points Card */}
           <div className="group relative bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-orange-500/20 hover:border-orange-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -79,7 +76,6 @@ export default function Service() {
           </div>
         </div>
 
-        {/* Subscription Card */}
         <div className="relative bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-orange-500/20 rounded-2xl p-8 overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/5 rounded-full blur-3xl -z-10" />
 

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DonationContext } from "../../context/DonationContext.jsx";
 import { FiExternalLink, FiUser, FiArrowDown } from "react-icons/fi";
+import Loading from "../../components/Loading.jsx";
 
 const SORTS = {
   latest: "Latest",
@@ -44,11 +45,7 @@ const Donations = () => {
   }, [requestDonations, sortBy]);
 
   if (loading) {
-    return (
-      <div className="h-40 flex items-center justify-center text-stone-400">
-        Loading donations…
-      </div>
-    );
+    return <Loading fullScreen={true} />;
   }
 
   if (!donations.length) {
@@ -62,7 +59,6 @@ const Donations = () => {
   return (
     <div className="min-h-screen bg-zinc-900 text-stone-100 px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-5">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
@@ -90,7 +86,6 @@ const Donations = () => {
           </div>
         </div>
 
-        {/* Donation list */}
         <div className="space-y-3">
           {donations.map((d) => (
             <div
@@ -98,7 +93,6 @@ const Donations = () => {
               className="group bg-zinc-800/40 backdrop-blur border border-zinc-700/70 rounded-xl p-4 hover:bg-zinc-800/60 transition"
             >
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                {/* Amount */}
                 <div className="flex-1">
                   <div className="text-lg font-semibold text-stone-100">
                     {d.amount.value}{" "}
@@ -119,14 +113,12 @@ const Donations = () => {
                   </div>
                 </div>
 
-                {/* Meta */}
                 <div className="text-xs text-stone-400">
                   Network: {d.amount.networkName}
                   <br />
                   Block: {d.blockNumber}
                 </div>
 
-                {/* Actions */}
                 <div className="flex flex-col items-start sm:items-end gap-2">
                   <span
                     className={`text-xs px-2 py-1 rounded-full font-medium ${

@@ -1,10 +1,10 @@
-// src/pages/Dashboard.jsx
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RequestContext } from "../context/RequestContext";
 import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
 import { FiMoreVertical } from "react-icons/fi";
+import Loading from "../components/Loading";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function Dashboard() {
     async function load() {
       setLoading(true);
       try {
-        const a = await fetchRequestByUser(user?._id); // ONLY this as you asked
+        const a = await fetchRequestByUser(user?._id);
         console.log("Fetched user requests:", a);
       } catch (err) {
         console.error(err);
@@ -70,11 +70,8 @@ export default function Dashboard() {
           </button>
         </header>
 
-        {/* Loader */}
         {loading ? (
-          <div className="py-12 flex items-center justify-center">
-            <div className="loader rounded-full border-4 border-t-4 border-zinc-700 h-12 w-12" />
-          </div>
+          <Loading fullScreen={false} />
         ) : requests.length === 0 ? (
           <div className="p-8 bg-zinc-800/30 border border-zinc-700 rounded-2xl text-stone-300">
             <p className="mb-2">You have no requests yet.</p>
@@ -87,7 +84,6 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Desktop header row */}
             <div className="hidden lg:flex items-center gap-4 text-stone-400 text-sm px-3">
               <div className="w-2/5">Title</div>
               <div className="w-1/5">Category</div>
@@ -104,7 +100,6 @@ export default function Dashboard() {
                   key={id}
                   className="bg-zinc-800/20 border border-zinc-700 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center gap-4"
                 >
-                  {/* LEFT */}
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-stone-100">
                       {req.title}
@@ -126,7 +121,6 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    {/* Mobile status */}
                     <div className="lg:hidden mt-3">
                       <select
                         value={req.status}
@@ -141,9 +135,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* RIGHT buttons */}
                   <div className="flex items-center gap-3 ml-auto lg:ml-0">
-                    {/* Desktop status */}
                     <div className="hidden lg:block">
                       <select
                         value={req.status}

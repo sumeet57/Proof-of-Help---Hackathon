@@ -1,4 +1,3 @@
-// src/pages/Auth.jsx
 import React, { useState, useCallback, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import {

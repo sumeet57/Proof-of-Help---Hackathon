@@ -130,7 +130,6 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* FORM */}
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-stone-400">First name</label>
@@ -191,7 +190,6 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* STATS */}
             <div className="mt-5 grid grid-cols-2 gap-3">
               <div className="p-3 bg-zinc-900/20 border border-zinc-700 rounded-lg text-center">
                 <div className="text-xs text-stone-400">Requests</div>
