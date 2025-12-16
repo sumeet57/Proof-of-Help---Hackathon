@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { FiEdit2, FiLogOut } from "react-icons/fi";
 
 export default function Profile() {
-  const { user, update } = useContext(UserContext);
+  const { user, update, getUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [editMode, setEditMode] = useState(false);
@@ -18,12 +18,18 @@ export default function Profile() {
   });
 
   useEffect(() => {
-    setForm({
-      firstName: user?.fullName?.firstName || "",
-      lastName: user?.fullName?.lastName || "",
-      walletId: user?.walletId || "",
-    });
-  }, [user]);
+    const fetchUser = async () => {
+      const success = await getUser();
+      if (success) {
+        setForm({
+          firstName: user?.fullName?.firstName || "",
+          lastName: user?.fullName?.lastName || "",
+          walletId: user?.walletId || "",
+        });
+      }
+    };
+    fetchUser();
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -40,7 +46,6 @@ export default function Profile() {
         },
         walletId: form.walletId?.trim() || null,
       });
-      toast.success("Profile updated");
       setEditMode(false);
     } catch (err) {
       console.error(err);

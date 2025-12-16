@@ -30,8 +30,8 @@ export const register = async (data) => {
       password: hashedPassword,
     });
     await user.save();
-
-    return user;
+    const sessionId = await createSessionForUser(user._id);
+    return { user, sessionId };
   } catch (error) {
     throw new Error(error.message);
   }
@@ -50,7 +50,8 @@ export const login = async (data) => {
       if (!comparedPassword) {
         throw new Error("Invalid email or password");
       } else {
-        return user;
+        const sessionId = await createSessionForUser(user._id);
+        return { user, sessionId };
       }
     }
   } catch (error) {

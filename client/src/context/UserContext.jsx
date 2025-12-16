@@ -35,6 +35,7 @@ export const UserContextProvider = ({ children }) => {
       setLoading(true);
       const response = await userApi.post("/register", userData);
 
+      saveToLocalStorage("sessionId", response.data.sessionId);
       setUser(response.data.user);
       await getUser();
 
@@ -55,6 +56,7 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/login", userData);
+      saveToLocalStorage("sessionId", response.data.sessionId);
       setUser(response.data.user);
       await getUser();
       toast.success(response.data.message);
@@ -74,7 +76,7 @@ export const UserContextProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await userApi.post("/logout");
-
+      removeFromLocalStorage("sessionId");
       setUser(null);
       window.location.href = "/";
       return response;

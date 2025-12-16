@@ -13,8 +13,12 @@ export function generateSessionId() {
 }
 
 export function hashSessionId(rawSessionId) {
+  const sanitizedId = String(rawSessionId)
+    .trim()
+    .replace(/^["'](.+)["']$/, "$1");
+
   return crypto
     .createHmac("sha256", SESSION_SECRET)
-    .update(rawSessionId)
+    .update(sanitizedId)
     .digest("hex");
 }

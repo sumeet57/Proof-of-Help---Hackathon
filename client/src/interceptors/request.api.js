@@ -2,7 +2,7 @@ import axios from "axios";
 import { getFromLocalStorage } from "../utils/storage.utils";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL + "/api/request";
-console.log("BACKEND_URL:", BACKEND_URL);
+
 const sessionId = getFromLocalStorage("sessionId") || "";
 
 export const requestApi = axios.create({
@@ -11,6 +11,19 @@ export const requestApi = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+requestApi.interceptors.request.use((cfg) => {
+  try {
+    const sid = getFromLocalStorage("sessionId");
+    if (sid) {
+      cfg.headers["x-session-id"] = sid;
+    } else {
+      delete cfg.headers["x-session-id"];
+    }
+  } catch (e) {
+    console.error("Error attaching x-session-id:", e);
+  }
+  return cfg;
 });
 
 requestApi.interceptors.response.use(

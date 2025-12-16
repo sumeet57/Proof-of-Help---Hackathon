@@ -46,6 +46,7 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+// Add this to your User model file
+UserSchema.index({ "sessions.sessionIdHash": 1 });
 const User = mongoose.model("User", UserSchema);
 export default User;

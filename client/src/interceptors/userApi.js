@@ -11,21 +11,19 @@ export const userApi = axios.create({
   },
 });
 
-// Attach dynamic x-session-id for every request (reads localStorage at request time)
-// userApi.interceptors.request.use((cfg) => {
-//   try {
-//     const sid = getFromLocalStorage("sessionId");
-//     if (sid) {
-//       cfg.headers["x-session-id"] = sid;
-//     } else {
-//       // ensure header removed if not set
-//       delete cfg.headers["x-session-id"];
-//     }
-//   } catch (e) {
-//     // ignore
-//   }
-//   return cfg;
-// });
+userApi.interceptors.request.use((cfg) => {
+  try {
+    const sid = getFromLocalStorage("sessionId");
+    if (sid) {
+      cfg.headers["x-session-id"] = sid;
+    } else {
+      delete cfg.headers["x-session-id"];
+    }
+  } catch (e) {
+    console.error("Error attaching x-session-id:", e);
+  }
+  return cfg;
+});
 
 userApi.interceptors.response.use(
   (response) => response,

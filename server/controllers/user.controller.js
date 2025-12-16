@@ -23,14 +23,18 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    const user = await register({ fullName, email, password });
-    const tokens = generateToken(user._id);
+    const data = await register({ fullName, email, password });
+    const tokens = generateToken(data.user._id);
 
     return res
       .status(201)
       .cookie("accessToken", tokens.accessToken, accessTokenOptions)
       .cookie("refreshToken", tokens.refreshToken, refreshTokenOptions)
-      .json({ message: "User registered successfully", user });
+      .json({
+        message: "User registered successfully",
+        user: data.user,
+        sessionId: data.sessionId,
+      });
   } catch (error) {
     console.error("Error in registerUser:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -41,15 +45,19 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await login({ email, password });
+    const data = await login({ email, password });
 
-    const tokens = generateToken(user._id);
+    const tokens = generateToken(data.user._id);
 
     return res
       .status(200)
       .cookie("accessToken", tokens.accessToken, accessTokenOptions)
       .cookie("refreshToken", tokens.refreshToken, refreshTokenOptions)
-      .json({ message: "Login successful", user });
+      .json({
+        message: "Login successful",
+        user: data.user,
+        sessionId: data.sessionId,
+      });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -93,8 +101,24 @@ export const logoutUser = async (req, res) => {
     res.clearCookie("accessToken", accessTokenOptions);
     res.clearCookie("refreshToken", refreshTokenOptions);
 
+    const sessionId = req.headers["x-session-id"];
+    const userId = req.userId;
+
+    if (sessionId && userId) {
+      const hashedSessionId = hashSessionId(sessionId);
+      await User.updateOne(
+        { _id: userId },
+        {
+          $pull: {
+            sessions: { sessionIdHash: hashedSessionId },
+          },
+        }
+      );
+    }
+
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
+    console.error("Logout Error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
