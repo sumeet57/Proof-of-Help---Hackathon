@@ -13,7 +13,7 @@ export const CheckoutContextProvider = ({ children }) => {
   const checkout = async (data) => {
     try {
       setPlaceOrderLoading(true);
-      console.log("Checkout data:", data);
+
       const response = await paymentApi.post("/checkout", JSON.stringify(data));
       setOrderId(response.data.orderId);
       setPlaceOrderLoading(false);

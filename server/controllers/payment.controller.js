@@ -71,7 +71,6 @@ export const cashfreeWebhook = async (req, res) => {
 };
 
 export const userDroppedController = async (req, res) => {
-  console.log("User dropped controller called");
   const { OrderId } = req.body;
   try {
     const result = await userDroppedPayment(OrderId);

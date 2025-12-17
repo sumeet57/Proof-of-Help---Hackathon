@@ -1,6 +1,8 @@
 import crypto from "crypto";
+import dotenv from "dotenv";
+dotenv.config();
 
-let paymentServiceEnabled = true;
+let paymentServiceEnabled = process.env.PAYMENT_SERVICE_ENABLED === "true";
 let platformFeePercentage = 5;
 
 export const isPaymentServiceEnabled = () => paymentServiceEnabled;

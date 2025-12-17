@@ -36,7 +36,10 @@ export const createCheckoutOrder = async (orderDataDetails) => {
   if (!isEnabled) {
     return {
       status: 503,
-      data: { error: "Payment service is off by Admin" },
+      data: {
+        error:
+          "Payment service available only in test/dev mode (disabled by Admin)",
+      },
     };
   }
 
@@ -46,7 +49,6 @@ export const createCheckoutOrder = async (orderDataDetails) => {
   }
 
   const price = await calculateTotalPointPrice(pointType, pointCount);
-  console.log("Total price calculated:", price);
 
   const payment = await Payment.create({
     user: userId,
