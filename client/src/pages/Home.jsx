@@ -10,26 +10,35 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function load() {
-      await fetchAllRequests();
-    }
-    load();
+    fetchAllRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-stone-100 ">
+    <div className="min-h-screen bg-zinc-900 text-stone-100">
       <div className="w-full">
-        <div className="flex items-center mb-4 justify-between ">
+        {/* Header actions */}
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
+            {/* Create request */}
             <button
               className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-800 border border-zinc-700 text-sm text-stone-100 hover:bg-zinc-800/90"
               onClick={() => navigate("/create")}
             >
               + Create Request
             </button>
+
+            {/* Buy credits (desktop only) */}
+            <button
+              className="hidden lg:inline-flex items-center gap-2 px-3 py-2 rounded-md border border-orange-400/40 text-sm text-orange-300 hover:bg-orange-400/10 transition"
+              onClick={() => navigate("/service")}
+            >
+              Buy Credits
+            </button>
           </div>
         </div>
 
+        {/* Content */}
         {loading ? (
           <div className="pt-12">
             <Loading fullScreen={false} />
@@ -45,11 +54,10 @@ const Home = () => {
             <p className="text-stone-300">
               No requests found. Create the first request!
             </p>
+
             <button
               className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-orange-400 text-zinc-900 font-semibold"
-              onClick={() => {
-                navigate("/create");
-              }}
+              onClick={() => navigate("/create")}
             >
               + Create Request
             </button>
@@ -61,10 +69,7 @@ const Home = () => {
                 <RequestCard
                   key={request._id}
                   request={request}
-                  onDonate={(r) => {
-                    console.log("Navigating to donate for request:", r._id);
-                    navigate(`/${r._id}`);
-                  }}
+                  onDonate={(r) => navigate(`/${r._id}`)}
                 />
               ))}
             </section>

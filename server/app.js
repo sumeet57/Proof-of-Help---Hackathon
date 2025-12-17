@@ -9,6 +9,7 @@ import helmet from "helmet";
 import hpp from "hpp";
 import requestRouter from "./routes/request.route.js";
 import donationRouter from "./routes/donation.route.js";
+import paymentRoute from "./routes/payment.route.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/", limiter);
 app.use("/api/user", userRouter);
 app.use("/api/request", requestRouter);
 app.use("/api/donation", donationRouter);
+app.use("/api/payment", paymentRoute);
 
 app.use("/", (req, res) => {
   res.json({ message: "Server is running" });

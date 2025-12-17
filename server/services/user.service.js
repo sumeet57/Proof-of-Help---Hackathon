@@ -57,6 +57,14 @@ export async function addBoastCredits(userId, count) {
 
   return user;
 }
+export async function addRequestCredits(userId, count) {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $inc: { requests: count } },
+    { new: true }
+  ).select("-password");
+  return user;
+}
 
 export async function consumeRequestCreditOrThrow(userId) {
   const user = await User.findOne({ _id: userId }).select("requests");
